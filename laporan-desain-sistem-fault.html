@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Desain Sistem Fault-Tolerant</title>
+    <style>
+        /* Reset dan variabel */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d3748;
+            --accent-color: #3182ce;
+            --light-color: #f7fafc;
+            --dark-color: #2d3748;
+            --border-color: #e2e8f0;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 8px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f9fafb;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Cover Page */
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .cover-page h1 {
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .cover-logo {
+            width: 150px;
+            height: 150px;
+            margin: 30px 0;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: var(--shadow);
+        }
+        
+        .cover-info {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .cover-info p {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .cover-info strong {
+            color: var(--primary-color);
+        }
+        
+        /* Kata Pengantar */
+        .kata-pengantar {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .kata-pengantar h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .kata-pengantar-content {
+            text-align: justify;
+            margin-bottom: 40px;
+        }
+        
+        .kata-pengantar-content p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .abstract-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .abstract-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .abstract-keywords {
+            margin-top: 20px;
+            font-style: italic;
+            color: var(--secondary-color);
+        }
+        
+        .signature {
+            text-align: right;
+            margin-top: 50px;
+            font-style: italic;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .toc h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .toc ul {
+            list-style-type: none;
+        }
+        
+        .toc li {
+            margin-bottom: 8px;
+        }
+        
+        .toc a {
+            color: var(--accent-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .toc a::before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 20px;
+        }
+        
+        /* Sections */
+        section {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+        }
+        
+        h4 {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        table caption {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+            color: var(--primary-color);
+        }
+        
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        tbody tr:nth-of-type(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background-color: #edf2f7;
+        }
+        
+        tbody tr:last-of-type {
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        /* Images */
+        .image-container {
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .image-caption {
+            font-style: italic;
+            margin-top: 10px;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        /* Highlight boxes */
+        .highlight {
+            background-color: #ebf8ff;
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .highlight strong {
+            color: var(--accent-color);
+        }
+        
+        /* References */
+        .references {
+            font-size: 0.9rem;
+        }
+        
+        .references ol {
+            margin-left: 20px;
+        }
+        
+        .references li {
+            margin-bottom: 10px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .cover-page h1 {
+                font-size: 2rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        section, .cover-page, .kata-pengantar {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                max-width: 100%;
+            }
+            
+            section, .cover-page, .kata-pengantar {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            
+            .cover-page {
+                page-break-after: always;
+            }
+            
+            .kata-pengantar {
+                page-break-after: always;
+            }
+            
+            .toc {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+     <!-- Cover Page -->
+    <div class="cover-page" id="cover">
+        <h1 class="cover-title">Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</h1>
+        
+        <!-- Logo Universitas -->
+        <div style="margin: 30px 0; text-align: center;">
+            <div style="display: inline-block; padding: 15px; background: white; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <img src="cakrwala-university.jpeg" 
+                     alt="Logo Universitas Cakrawala" 
+                     style="width: 120px; height: 120px; display: block; margin: 0 auto;">
+            </div>
+            <h2 style="font-size: 16pt; margin-top: 15px; color: #0047AB;">
+                UNIVERSITAS CAKRAWALA
+            </h2>
+           
+        </div>
+        
+       
+        
+       <!-- Data Penulis -->
+        <div style="margin: 40px 0; text-align: center;">
+            <div style="display: inline-block; text-align: center; padding: 25px 50px; background: #f8f9fa; border-radius: 10px; border-left: 5px solid #0047AB;">
+                <p style="font-size: 11pt; color: #666; margin: 0 0 10px 0;">Disusun oleh</p>
+                <p style="font-size: 18pt; margin: 0; font-weight: bold; color: #0047AB;">DIMAS KURNIAWAN</p>
+                <div style="width: 80px; height: 2px; background: #0047AB; margin: 10px auto;"></div>
+                <p style="font-size: 12pt; margin: 10px 0 0 0;"><strong>NIM: 25120300016</strong></p>
+            </div>
+        </div>
+        
+		 <!-- Informasi Program Studi -->
+        <div style="margin-top: 20px; text-align: center;">
+            <div style="display: inline-block; text-align: center;">
+                <p style="font-size: 12pt; margin: 5px 0; color: #333;">
+                    <strong>PROGRAM STUDI ILMU KOMPUTER</strong>
+                </p>
+                <p style="font-size: 11pt; margin: 5px 0; color: #666;">
+                    Paralel and Distributed Computer (Disc3)
+                </p>
+                <p style="font-size: 11pt; margin: 5px 0; color: #666;">
+                    Fakultas Ilmu Komputer
+                </p>
+				<p style="font-size: 11pt; margin: 5px 0; color: #666;">
+					Dosen Pengajar:Dr. Fandy Neta, S.Pd., M.Pd.T
+				</p>
+            </div>
+        </div>
+		
+		
+		
+      
+    </div>
+    
+
+    <!-- KATA PENGANTAR -->
+    <section class="kata-pengantar">
+        <h2>KATA PENGANTAR</h2>
+        
+        <div class="kata-pengantar-content">
+            <p>Puji syukur kami panjatkan ke hadirat Allah SWT, karena berkat rahmat dan karunia-Nya, laporan berjudul <strong>"Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi: Studi Kasus Implementasi Platform Microservice Berbasis Red Hat OpenShift"</strong> ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bagian dari pemenuhan tugas mata kuliah <strong>Komputasi Terdistribusi</strong>, sekaligus sebagai upaya untuk menerapkan prinsip-prinsip teoritis dalam konteks perancangan sistem nyata yang handal, tersedia tinggi, dan tahan terhadap kegagalan.</p>
+            
+            <p>Perkembangan teknologi digital yang pesat telah mengubah cara organisasi dalam menyediakan layanan, terutama di sektor yang membutuhkan keandalan tinggi dan skalabilitas yang dinamis. Dalam lingkungan bisnis yang menuntut ketersediaan layanan 24/7, kecepatan rilis, dan keamanan sistem, arsitektur microservice yang dikelola melalui platform enterprise seperti <strong>Red Hat OpenShift</strong> menjadi fondasi penting untuk membangun sistem yang resilient, mudah dikelola, dan siap tumbuh. Oleh karena itu, laporan ini hadir sebagai respons terhadap kebutuhan akan desain sistem yang tidak hanya tangguh dalam menghadapi kegagalan, tetapi juga mampu beradaptasi dengan perubahan bisnis yang cepat.</p>
+            
+            <p>Melalui pendekatan arsitektur <strong>microservice berbasis Red Hat OpenShift Platform</strong>, kami merancang solusi yang mengintegrasikan berbagai komponen modern seperti container orchestration, service mesh (Istio), distributed database cluster, object storage, serta sistem pemantauan, keamanan, dan pemulihan otomatis dalam lingkungan hybrid cloud. Laporan ini juga dilengkapi dengan analisis performa, ketersediaan, serta rekomendasi implementasi yang bertahap, yang diharapkan dapat menjadi panduan baik secara teknis maupun strategis dalam mengadopsi platform enterprise-grade untuk sistem mission-critical.</p>
+            
+          
+            
+            <p>Kami mengucapkan terima kasih kepada <strong>Dosen Pengampu</strong> yang telah memberikan bimbingan, masukan, dan ilmu selama proses pembelajaran dan penyusunan laporan ini. Terima kasih juga kepada seluruh anggota kelompok yang telah bekerja sama dengan baik, serta berbagai sumber literatur dan referensi yang telah memberikan landasan teori dan praktik yang kuat.</p>
+            
+            <p>Kami menyadari bahwa laporan ini masih memiliki ruang untuk penyempurnaan. Oleh karena itu, kritik dan saran yang membangun sangat kami harapkan untuk perbaikan di masa mendatang. Semoga laporan ini dapat memberikan manfaat dan kontribusi, baik sebagai bahan pembelajaran maupun sebagai referensi dalam pengembangan sistem terdistribusi yang fault-tolerant dengan platform <strong>Red Hat OpenShift</strong>.</p>
+            
+            <div class="signature">
+                <p>Jakarta, 24 Desember 2025</p>
+            </div>
+			
+			  <div class="abstract-box">
+                <h3>ABSTRAK</h3>
+                <p>Laporan ini menyajikan desain sistem <em>fault-tolerant</em> untuk platform transaksi finansial berbasis arsitektur <strong>active-active hybrid cloud</strong>. Sistem dirancang untuk mendukung transaksi digital sensitif dengan target <em>availability</em> <strong>99,99%</strong> melalui implementasi redundansi multi-layer pada lingkungan cloud dan <em>data center on-premise</em>. Desain mengintegrasikan <strong>container orchestration platform (Red Hat OpenShift)</strong>, <strong>database cluster terdistribusi (PostgreSQL Streaming Replication)</strong>, <strong>object storage (MinIO)</strong>, dan <strong>messaging system (ActiveMQ)</strong> dengan strategi <em>recovery</em> otomatis berbasis <em>health check</em> dan <em>consensus protocol</em>. Analisis menunjukkan sistem mampu menangani kegagalan hingga <strong>33% node</strong> tanpa <em>downtime</em> signifikan, dengan <strong>RTO (Recovery Time Objective) &lt; 2 menit</strong> dan <strong>RPO (Recovery Point Objective) = 0</strong> untuk transaksi finansial. Pendekatan ini memanfaatkan prinsip <strong>komputasi terdistribusi</strong> seperti <em>replication</em>, <em>sharding</em>, dan <em>distributed consensus</em> untuk mencapai ketahanan terhadap <em>single point of failure</em> dan kegagalan berskala zona.</p>
+                
+                <p class="abstract-keywords">
+                    <strong>Kata Kunci:</strong> <em>fault tolerance</em>, <em>high availability</em>, <em>microservices</em>, <em>Kubernetes</em>, <em>OpenShift</em>, <em>active-active</em>, <em>distributed systems</em>, <em>disaster recovery</em>.
+                </p>
+            </div>
+        </div>
+    </section>
+ 
+    
+   
+    <!-- LAPORAN UTAMA -->
+    <header>
+        <h1 align="center">LAPORAN DESAIN SISTEM FAULT-TOLERANT</h1>
+        <p class="subtitle" align="center">Platform Transaksi Berbasis Microservices</p>
+    </header>
+    
+    <!-- DAFTAR ISI -->
+    <section class="toc">
+        <h2>Daftar Isi</h2>
+        <ul>
+            <li><a href="#bab1">BAB 1 - PENDAHULUAN</a></li>
+            <li><a href="#bab2">BAB 2 - ANALISIS PERMASALAHAN</a>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li><a href="#bab2-1">2.1 Deskripsi Masalah</a></li>
+                    <li><a href="#bab2-2">2.2 Analisis Kebutuhan Komputasi Paralel/Terdistribusi</a></li>
+                    <li><a href="#bab2-3">2.3 Analisis Kebutuhan Fault Tolerance</a></li>
+                </ul>
+            </li>
+            <li><a href="#bab3">BAB 3 - DESAIN SOLUSI PARALEL/TERDISTRIBUSI</a>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li><a href="#bab3-1">3.1 Arsitektur Sistem Fault-Tolerant</a></li>
+                    <li><a href="#bab3-2">3.2 Komponen Kunci dan Strategi Fault-Tolerance</a></li>
+                    <li><a href="#bab3-3">3.3 Strategi Fault-Tolerance per Layer</a></li>
+                    <li><a href="#bab3-4">3.4 Skenario Kegagalan dan Recovery Strategy</a></li>
+                </ul>
+            </li>
+            <li><a href="#bab4">BAB 4 - ANALISIS PERFORMA / SCALABILITY / BOTTLENECK</a>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li><a href="#bab4-1">4.1 Analisis Performa dan Availability</a></li>
+                    <li><a href="#bab4-2">4.2 Scalability Analysis</a></li>
+                    <li><a href="#bab4-3">4.3 Identifikasi Bottleneck</a></li>
+                </ul>
+            </li>
+            <li><a href="#bab5">BAB 5 - KESIMPULAN DAN REKOMENDASI</a>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li><a href="#bab5-1">5.1 Kesimpulan</a></li>
+                    <li><a href="#bab5-2">5.2 Rekomendasi</a></li>
+                </ul>
+            </li>
+            <li><a href="#pustaka">DAFTAR PUSTAKA</a></li>
+        </ul>
+    </section>
+    
+    <!-- ISI LAPORAN (sama dengan file asli) -->
+    <section id="bab1">
+        <h2>BAB 1 - PENDAHULUAN</h2>
+        <p>Dalam era digital yang terus berkembang, ketergantungan pada sistem komputasi terdistribusi telah menjadi fondasi kritis bagi operasi bisnis modern. Sistem-sistem ini, yang terdiri dari berbagai komponen yang tersebar secara geografis dan terhubung melalui jaringan, memungkinkan pemrosesan data skala besar, layanan cloud, aplikasi real-time, dan platform digital yang mendukung ekonomi global. Namun, dengan kompleksitas arsitektur terdistribusi muncul tantangan signifikan terkait keandalan sistem — satu kegagalan pada node tertentu dapat berpotensi mengganggu keseluruhan layanan, menyebabkan kerugian finansial yang besar, menurunkan produktivitas, dan merusak reputasi organisasi.</p>
+        
+        <div class="highlight">
+            <p><strong>Desain Sistem Fault-Tolerant</strong> muncul sebagai solusi fundamental dalam menghadapi realitas ini. Konsep ini merujuk pada kemampuan sistem untuk terus beroperasi dengan benar meskipun terjadi kegagalan pada beberapa komponen penyusunnya. Dalam konteks komputasi terdistribusi, <em>fault tolerance</em> bukan lagi sekadar fitur tambahan, melainkan menjadi kebutuhan mendasar yang memastikan kelangsungan bisnis, terutama untuk aplikasi kritis seperti sistem transaksi finansial digital.</p>
+        </div>
+        
+        <p>Prinsip dasar desain <em>fault-tolerant</em> mencakup <strong>redundansi</strong> (penyediaan komponen cadangan), <strong>deteksi kegagalan</strong> (mekanisme untuk mengidentifikasi masalah secara cepat), <strong>isolasi</strong> (mencegah kegagalan menyebar), dan <strong>recovery</strong> (proses pemulihan ke kondisi normal). Implementasi yang efektif memerlukan pertimbangan matang mengenai <em>trade-off</em> antara <em>availability</em>, <em>consistency</em>, <em>partition tolerance</em> — sebagaimana dijelaskan dalam <strong>Teorema CAP</strong> — serta pertimbangan biaya, kompleksitas, dan performa sistem.</p>
+        
+        <h3>Tujuan Penulisan Laporan</h3>
+        <p><strong>Tujuan penulisan laporan ini</strong> adalah untuk:</p>
+        <ol>
+            <li>Menganalisis kebutuhan <em>fault tolerance</em> pada platform transaksi berbasis microservice.</li>
+            <li>Merancang arsitektur yang tahan terhadap kegagalan node, zona, dan regional.</li>
+            <li>Mengevaluasi performa, <em>scalability</em>, dan <em>recovery capability</em> sistem yang diusulkan.</li>
+            <li>Memberikan rekomendasi implementasi dan pengembangan ke depan.</li>
+        </ol>
+        
+        <h3>Ruang Lingkup dan Metodologi</h3>
+        <p><strong>Ruang lingkup</strong> meliputi desain arsitektur pada level infrastruktur dan platform, dengan fokus pada mekanisme deteksi kegagalan, <em>failover</em> otomatis, dan <em>data consistency</em>.</p>
+        <p><strong>Metodologi desain</strong> yang digunakan adalah <em>iterative fault-tolerant design pattern</em>, meliputi: <em>failure mode analysis</em>, <em>redundancy planning</em>, <em>consensus protocol selection</em>, dan <em>recovery automation</em>.</p>
+    </section>
+    
+    <section id="bab2">
+        <h2>BAB 2 - ANALISIS PERMASALAHAN</h2>
+        
+        <div id="bab2-1">
+            <h3>2.1 Deskripsi Masalah</h3>
+            <p><strong>Konteks Sistem:</strong> Platform transaksi dengan karakteristik:</p>
+            <ul>
+                <li>Volume transaksi: 10.000+ transaksi harian</li>
+                <li>Data sensitif: Transaksi dengan compliance ketat (PCI-DSS, GDPR)</li>
+                <li>Pengguna: Pelanggan ritel, klien korporat, administrator</li>
+                <li>Ketersediaan: Diperlukan 24/7 tanpa interruption</li>
+            </ul>
+            
+            <p><strong>Permasalahan Utama:</strong></p>
+            <ol>
+                <li><strong>Single Point of Failure (SPOF):</strong> Infrastruktur existing rentan terhadap kegagalan komponen tunggal (database primary, load balancer, storage controller).</li>
+                <li><strong>Manual Recovery:</strong> Proses recovery memakan waktu 30+ menit, bergantung pada intervensi manusia.</li>
+                <li><strong>Data Inconsistency:</strong> Risiko inkonsistensi data saat failover karena asynchronous replication.</li>
+                <li><strong>Scalability Limitation:</strong> Arsitektur monolitik sulit diskalakan secara horizontal.</li>
+                <li><strong>Complex Failure Detection:</strong> Tidak ada mekanisme deteksi kegagalan real-time yang terintegrasi.</li>
+            </ol>
+        </div>
+        
+        <div id="bab2-2">
+            <h3>2.2 Analisis Kebutuhan Komputasi Paralel/Terdistribusi</h3>
+            <table>
+                <caption>Jenis Kegagalan dan Dampaknya</caption>
+                <thead>
+                    <tr>
+                        <th>Jenis Kegagalan</th>
+                        <th>Dampak pada Sistem</th>
+                        <th>Contoh dalam Konteks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Node Crash Failure</strong></td>
+                        <td>Node berhenti merespons</td>
+                        <td>Server mati, container crash</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Partition</strong></td>
+                        <td>Komunikasi terputus antar node</td>
+                        <td>network terisolasi, latency tinggi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Byzantine Failure</strong></td>
+                        <td>Node memberikan respons salah</td>
+                        <td>Bug software, konfigurasi salah</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance Degradation</strong></td>
+                        <td>Latency tinggi, throughput turun</td>
+                        <td>CPU overload, disk IOPs tinggi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Corruption</strong></td>
+                        <td>Data rusak di storage atau memory</td>
+                        <td>Bit rot, bug aplikasi</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="bab2-3">
+            <h3>2.3 Analisis Kebutuhan Fault Tolerance</h3>
+            <table>
+                <caption>Kebutuhan Fault Tolerance dan Metrik Target</caption>
+                <thead>
+                    <tr>
+                        <th>Kebutuhan</th>
+                        <th>Deskripsi</th>
+                        <th>Metrik Target</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>High Availability</strong></td>
+                        <td>Layanan tetap tersedia selama maintenance/kegagalan</td>
+                        <td>SLA 99.99% (≤52 menit downtime/tahun)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fault Tolerance</strong></td>
+                        <td>Toleransi terhadap kegagalan multiple nodes</td>
+                        <td>Survive 33% node failure</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Consistency</strong></td>
+                        <td>Konsistensi data transaksi finansial</td>
+                        <td>ACID compliance, RPO = 0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>Response time cepat untuk user experience</td>
+                        <td>&lt; 2 detik per transaksi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>Kapasitas menghadapi traffic spike</td>
+                        <td>Scale out hingga 10x traffic normal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recovery Speed</strong></td>
+                        <td>Minimal downtime saat failure</td>
+                        <td>RTO &lt; 2 menit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Failure Detection Speed</strong></td>
+                        <td>Deteksi cepat sebelum berdampak sistem</td>
+                        <td>≤ 30 detik</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Persyaratan Teknis Spesifik:</strong></p>
+            <ol>
+                <li>Deteksi kegagalan dalam ≤ 30 detik menggunakan kombinasi <em>heartbeat</em> dan <em>health check</em>.</li>
+                <li>Automated failover tanpa human intervention berdasarkan <em>consensus protocol</em>.</li>
+                <li>Multi-AZ deployment dengan geographic redundancy (minimal 3 zona).</li>
+                <li>Real-time monitoring dengan alerting berdasarkan SLO (Service Level Objective).</li>
+                <li>Data replication synchronous untuk transaksi, asynchronous untuk data pendukung.</li>
+            </ol>
+        </div>
+    </section>
+    
+    <section id="bab3">
+        <h2>BAB 3 - DESAIN SOLUSI PARALEL/TERDISTRIBUSI</h2>
+        
+        <div id="bab3-1">
+            <h3>3.1 Arsitektur Sistem Fault-Tolerant</h3>
+            
+            <h4>a) Database & DNS</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Postgre DB cluster 1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>64</td>
+                        <td>300</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Postgre DB cluster 2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>64</td>
+                        <td>300</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Postgre DB cluster 3</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>32</td>
+                        <td>300</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Postgre Enterprise Manager</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>16</td>
+                        <td>150</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Bastion (DNS,NTP)</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>4</td>
+                        <td>100</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>b) Minio</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Minio 1</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>8</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Minio 2</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>8</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Minio 3</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>8</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Minio 4</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>8</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>c) AMQ</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>ActiveMQ 1</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>16</td>
+                        <td>100</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>ActiveMQ 2</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>16</td>
+                        <td>100</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>ActiveMQ 3</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>16</td>
+                        <td>100</td>
+                        <td>500</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>d) Redis</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Redis 1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Redis 2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Redis 3</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>500</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>e) ELK</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>ELK 1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>2500</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>ELK 2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>2500</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>ELK 3</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>2500</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>f) Network & Services</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Amazon Simple Email Service (250.000 outgoing message/month)</td>
+                        <td>1</td>
+                        <td>Amazon Simple Email Service (250.000 outgoing message/month)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Dynamic Maps SDK for IOS (1.200.000req/year)</td>
+                        <td>1</td>
+                        <td>Dynamic Maps SDK for IOS (1.200.000req/year)</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Dynamic Maps SDK for Android (600.000req/year)</td>
+                        <td>1</td>
+                        <td>Dynamic Maps SDK for Android (600.000req/year)</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Firebase (Authentication with 80k MAU)</td>
+                        <td>1</td>
+                        <td>Firebase (Authentication with 80k MAU)</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Google ReCaptcha Enterprise (2.000.000)</td>
+                        <td>1</td>
+                        <td>Google ReCaptcha Enterprise (2.000.000)</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>VPN Tunnel</td>
+                        <td>2</td>
+                        <td>High Availability</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Direct Connect 1 TB</td>
+                        <td>1</td>
+                        <td>*Untuk Koneksi Hybrid (Onprem dan Cloud)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>g) Kubernetes OCP</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>vCPU</th>
+                        <th>Memory (GB)</th>
+                        <th>Disk 1 (GB)</th>
+                        <th>Disk 2 (GB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>OCP - Master1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>OCP - Master2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>OCP - Master3</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>OCP -- Worker1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>OCP -- Worker2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>OCP -- Worker3</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>OCP -- Worker4</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>OCP -- Worker5</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>OCP -- Worker6</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>OCP -- Worker7</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>OCP -- Worker8</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>OCP -- Worker9</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>OCP -- Infra1 (EFK) master</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>OCP -- Infra2 (EFK) replica 1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>OCP -- Infra3 (EFK) replica 2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>OCP -- Infra1 (registry, metrics , monitoring)</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>OCP -- Infra2 (registry, metrics , monitoring)</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>OCP -- Infra3 (registry, metrics , monitoring)</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>32</td>
+                        <td>150</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>OCP - Router 1</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>16</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>OCP - Router 2</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>16</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>OCP - Router 3</td>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>16</td>
+                        <td>150</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+	        <!-- TEMPATKAN DIAGRAM DRAW.IO DI SINI -->
+        <!-- draw.io diagram - Enterprise OpenShift Architecture -->
+        <div style="text-align: center; margin: 40px 0; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 20px;">Diagram Arsitektur Sistem Fault-Tolerant</h3>
+            
+            <!-- Container untuk diagram -->
+            <div id="diagram-container" style="width: 100%; height: 800px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                <iframe 
+                    style="width: 100%; height: 100%; border: none;" 
+                    src="https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&layers=1&nav=1&title=arsitekture%20hybrid%20onprem%20dan%20cloud.drawio.html&dark=0#R%3Cmxfile%20pages%3D%222%22%3E%3Cdiagram%20name%3D%22Enterprise%20OpenShift%20Architecture%20-%20Full%22%20id%3D%22UvMvyTIOfAQ3RDXCAwFO%22%3E7V1bd9q6Ev41Xu1%2BSJYvYODR4ZJwCgkFmu7uN8UW4BNjcWzTJP31RyPfLwG3tUFmN%2B1KsCxLRvpmNJoZzQhKf%2Ft666DdZkoMbAmyaLwKykCQ5ZakdukfKHnzS2hZULJ2TMMvk%2BKChfkDB4ViULo3DeymKnqEWJ65SxfqxLax7qXKkOOQl3S1FbHSve7QGucKFjqy8qVfTcPb%2BKXdthiX32FzvQl7lsTgzhaFlYMCd4MM8pIoUoaCrAqy8ooE5UaAsvR%2Fpe8Q4h2tFlbevvaxBaMfjqvf7%2BjXG4i%2Bu4Ntr6I2TfHH%2FOszWhqfv9id3d%2FP%2F2lPvl0VdBQUud5bOBPui7m1kE2vblbE9hbBHYle6xvTMibojezhaddD%2BnN4dbMhjvmD1kdWUJnedrwAaIqYqrGAJ2kxlDrYpXVm4StJmaIpeg0qspfxm5NacG1aVp9YxGGvrWDJaOMOGyX4Qt%2BRtQ%2B%2BEB1BC97wiX5Yw4fx%2FXI4vx8u2eipaLvzx7Y%2FefhC64uL4fxx3B8uwufoPESPBo1jx8OviQEsN03xZN1issWe80avNwlUK0qA4ZeYBCjQg8Kgw3Y3uA5JPbhEAQWuo7Z%2FCkG0bgCiajEn5zF3CJsJIDpkbxvYCEDxsjE9vNghHe6%2BUC4IiPK2IdoyaDAQ7q50hkKHPOPEHVXv4qfVIZwA0BJv8gGur1yGPI2WS90dnYmbDzEkMvASRqLQGwndvtCDkepbZG%2BsLPr9iwEVPO1kS7KvEXXYH9zDBAxlgSJBgy%2FxVRtlSgb3i0zJYjFJ9O83nu4wV1wn1NVDSA%2BQrfCNbOUsyF6tVrJeiGxDfVLb6gmQ3WsJWpvWH5kOfkJuVbjW9t6GjqSpI88kdga%2Bs727aRp%2Be3zjt3Ue%2FLbhXyFnZj%2BlVvBfBXSA3xtBk4ThSLjpCl3gnLeErGkDsujgvjZb9u%2B041A7kUhQBmdSm2%2Bgtc%2FEKLH6DqPs9J5E8RSMUhG0Dq2vfYXVePGeSPnTnHK4RSaM%2BgI7300dN40vRptOTvGqnkdkbeOu0SrCa1d%2BUg4zxuoWdiayPs5Awlzu6VbfqgiyCzoUVx65gr%2B0qb5lYgbJZgG3wzdwOxe8v191dczY%2BXHpYDD9hw0cLO3DwS0dYnGifRvOT796t7qHUBV2KGZ29C3O1%2FNuSf7YOTV%2F9O%2BE%2BkOlVo5J9yY9TeipSTnyTps55BVAQEEkftT6y%2FHj8K%2BKOOiEIIPeuEGUeHXs5Ft4HM%2BCl%2B%2FJ15LavZaumZaUHx4bKW0bvOvvnQX8EffLgf%2Bp2wZ%2BkQW%2FdEbwQ68fF0vtfnDz7WTo%2F4TxDlnmdzrATUO8xDnkQ3H9FzDvbtAOPtJezJ2Lf2mXlga2XEoEeDQdb4%2Fgm1GmmMPKewzyRFJBuwQmeGeDUiBYYiNn1%2FtpkGDb0MCESK90C7muqad5Ycw4i%2BGQg85qJYoMOgZyNxHHPY6akTaePDzGgmKMmI%2FmKmZxsLgb5MV%2Bh7dVjhMHW8ijnC01zgnwHBIXf%2BZV4heaEZPx4QD8UQ8hw2plenTJ3tFx8NRP4PNIv0rvSL90C7LG3q%2F2G1BHNPpnp6mytrKKBevz28qoMKFBfW02pr9vkYdf0FtFkgNQ6%2BMU5iFhTvhE7DVtd%2Fn2TH%2Ffr037Nd%2FyHIGqQpyYW9MzoXqqBbBWZIrmdKfMKjZM%2FpDD%2FSeva01ZS1vFMjcXljamkLtBbmATuyOuVydhLBZ3AG5dx65LP%2FTpww6x8q3LIy1HEIYJHU3Iet1EKlB4p4ICe93FaPci5c5xIU2bzSbjvrYcP4CS%2BkyKvV6Bp04nlJJCr7w0vnpZ4YU3fJU207VyqKNj7KV5aZpn2sTO7v2CIrplX9sg%2BNM%2B6bZeuYEZM3VkacGNrWkY0E0h807vDI5j51fZcySlAI8Q56BjEO8QNPGww%2FZiY668gFki0wbthDijIvuKONvjbPBEiD0E2GZo3qTSdrk8QJsuH0vwXxanVA5g8Lon4K1bjRygMDnAzSzn0coPULZxvl1fVgcTNHuj5LPY041M0UKnG%2FG9FWvueJALesdpQuWcJgpMfqegibPKxoH2uZfUPn8lznPllNErpAxtt7NiJ7X53vbMbQF9RKsB%2FWaG%2F5jbMPDz7lgklbVEVoz%2ByNc8h%2F6e2lHQSXaGitCF%2BmN75dBFwdnr3h48jCvF%2FxyvTddHTpIApsQ2PbodiDd5cZvR7i%2BnGWkc65d5F9jLmiL%2FvQJ7S%2BiB%2F92UvdILc8EPneZK8GKOJHPORXNZPJcYwoWPZxeWdx1MNNPPApz42Ltpdle9eD7FrgtH6mTx8x7vC8QPf6twtbDQd6g1xwmhpVFsWOFcBC9t%2BKwa%2B8ddQuoWwTWJIcsw3ROhfmxfTfGWMBj1Ed1S5ltewBES5rea3n9ukGNwppYuAX7eXQHhLc6ik%2BHAWZpK4MD4h5NPgC%2BmFK8T%2BwnJOnFoVbOR9UblLzffz9ACq5Geb8b1kJu1XX4yn5CNGkYdbc4ldLn0EcF%2FsYTepc2mtpRpfFvw8mX4Nj%2FSusq7tF765N8lSutMbTJzYEY2eF%2BVqmRK55dxYZF%2BLQvrSUE7bibyke0LTCHofxjAlEYNNIoDq7wL579h1Gy6zSiQT24dtEov7b%2BD8wEVHZ4IlaXp3UfT3dPF5gcqBvscI%2BvK140XqAwbAvAO7wL4mYyiZ919xk6D3VBEmFKIryvbfbImhYRHX0om8fvaJg4wJoRu%2F2juaGGx%2FYB4TzxzFShemsbcu7yL15d83jFaQY6L4ANtCXRzrjOO8gEkhf1Jahpaksg7Xy1rWpTzTqeN2boFfLQjdFtJW%2FoAeciP63JYqXduowjnCCprnitAUGNdMwJE0d%2BwMs%2BI660dvPg8OQalinRkELglAd%2BcbthzMNr6C3qBQSSuOEN07Gwz0%2FpsfUPnRefLkC1JxymF801aSMgnpxQOZNhQH5GklOG0IiIp9PA%2F5L0xww44rcIRW%2BGgbjkUkPOicFNoQuI8lodS1qx4AQKILNxAkI6Hp%2F9CaFkwphCHGbc5lDp4PyyllLXIVcxM%2BfCJ01RgSqY9fhCqljhaQpHE8R5m44YH4EJnPu095gWafHboINd32usTo5AfLxR2c7ujcsqTxVWgrzI8VuE80JcS2OcOHmIPNQrsiPMhBVuOnCo%2F1x7pjvGr6f0Nz123g6tvQZvweRCqGNjFW3hh04H3H5Lb4fW35M34OXYVPuh%2FL%2F%2Bo9YHv360QXNycfM%2FFZlKyXdZ09F3NHH1vXfbRd6VVISV266fEyMskpsROkhRjwjxGjClKvG5XQ4t%2BJIFLI8ZsGIpWNsBuTbTYVo70e2G02K5yVZTrJ8ZIwPzNZbGOVdE3u10aJaqZs805R6y6VsVMv11RvGhKVKukxLwBuP5lURK4WRP9%2Fe6lUWI3G0tOCs%2Fx10yKvaMdXxgtdqqkRaVSWsxr%2BIREOP1UEDQed44hZ0pohtJhaC6QbDPbu1MtoNl%2BL30B7f4h2nBnWjHRhurjlDr3D6FWRaiSHLqu%2FksotVchpar1E2ok6VZJqHXQaZ5M09kdLo9k8zrbrKdQXTSbC%2BR%2F2TQbskIOlbaFNBv5P%2FFOs5e5lEqcKI0kMWuWvDCyLJXmlXMfkcAMrwddf4jIN3eCUBF69EF2rpUNVMJP%2F8iRqjrN40WZXOWgLDRnZDQonexqwZm1vCVXuZmq1i7wh9%2Fzx%2B95MRJcPL%2Bv0osl9Fr%2FQ5cXS5cxPYSRibP08YcwqyHMKp1awkP7dRJm5PZeSJg82fLaF0mYWfqQeqex5eXyrOQ6vjDCLIgKcAk7JJ9%2BC3ZI7IwJZ9uhUFcW7oayJ0Ql3tOnV%2BmcER7jr5O7F2fF4pC7%2B2C5NO6ek35Oxd1jSgrlvezRpwvj7qXCAjSPu%2Fv0W5CUIo6CwStzzzkLiZyfomoVHP%2BvNt07BMPCag52ST5dKvFlnRPbEtsFfDI9tZKaCxrP98wWHMuvkjskwnrAW%2BVijvDFPbSOoEHIB8h8%2BWUOhzAX%2FeG9Nofzc3xwkqN4k%2FnGW%2Fi2da9GFl55NaEpd2oyc0aSFv9vT8IbyYObHXZwM76fXbtagtYGzFFiQI5J%2FKfSWdRHyLTYIUl%2B4z%2B21CxEO2mIqpxD9EQGwxoh%2BtuIlK5zyFsTSBLAMv3SPx8hgLSfQmBkY%2B%2BFOBDey3TdPY7yACfSI0JzyZTkooE9rIOAJq5CRIvfTcTQhSyWS1TfYP25INiCAo2lM1qLH1M5rP8KmoXmiZ%2BPySNCJid7ttnWdbaG%2BIR1ikxoResvx49DPz6lh55xsmUHrVYQVzjbYBsaTEdjo5XNNf0Ej6NAQg2%2BNk5HSss2pkJjS4y2MMr2d%2Bx65hp57D0cQtjqhvZFQV468GBgDUYQwcJPv%2BN3WhCsOX6ym8eAQ2fQdFgDyDZYgbd3bNcnZtqSn%2BX%2BLItllJ3nZ1hRds%2FJGyuSm8KKsnLdGVbPQK%2F3CQMy4gC0QYAXeFOt0cum3OYcrAXhvfkEa33rZjr6Vsg697sg7mvkjhM55USrneshb1%2Bw2mWSENphLGXR8fNx55vEjkOcqMKh9ubY3RGbRbYLXnCHHdiJmRY%2B8ipBmhXRwvbaz%2Fyde48nuqpgtkqEX%2FJQgynpAAYD%2B2ur7ZqpYKHFT9%2FHIgjsI1eIRWzanlHFX5RkOU%2FiWddczn2e2gWh0qvWA8FPjivQOzr7ETjQAylFkkYmxGc2NQPn81qzBTAZ3FUtkBbOE2eLCgwwdNq8fzdeDvtLX%2BMzGd4O7wd8iASHQcV5HMO2egJQFYDoFKofFlx4kZYoT4QTOY8TOaMUzAiOEu%2BrSikLVc3R2JIsqnBNGQNrsrEnJGQdAaKqkT2ILHEexRMziWi235l83hXC9ZuWjsc1PTr5g%2Bk%2F7HuBcWBosESDE%2FQGKh3OZpv3NaGUuanmVGhHZzud0prPieZccxXisMaJPp5T5jhZIw%2FxOsO8B3RXazaTnFO8C1JIjCYPX5si5PEeiFdtjCr7XXgUuBH4rCZ2I4BEsC3QSpX58J5aSkyvP8vQwHRqwB3mT4rI%2BQp0MeroA6c%2Br67o%2FejXe3iKc6WOLPLCHZA436GopZSeTQNSxjm%2BHJBSeUm5xFKLcyyd6KjFabGUcaYrh6UwZwaXMOLcRUktpVr9LaVJG%2F4V7a74scMUenwcVplH2dl4ndianfW5NcTAdmt8P5pri%2BX8S2iKWXyZTrV50p2IW1tMi%2Ffdeik1K58LT8LOvyQec%2FqDzCPMEyPMWcHPRrzFeSYltWaP%2FxMhIZGV8Z4YOIBDhzs0cH5sM3zdhqMBkgLtvQwYwqM3%2FKChzXkGoE6DXd8TaIiSTyXR0OIODJyLDJ0Ga2yTacVewW7PpIbIRs8AcX7ukBMiORcdOg1Wqb6T8pNKlMQKAKHyB4iTSw%2BsLjtR8n7N8IQ7HfjNlDJYaPX%2F%3C%2Fdiagram%3E%3Cdiagram%20id%3D%22B6SRn1sfuul3oYYYXaPt%22%20name%3D%22Hybrid%22%3E7V1Zd9q62v41rNV9QZYHBnPpAEk5DQkNafrtcydAgBtjczw0yf71nyTPsgAFJBuym3Yl2Ngy6H30TnqHht7fvN16YLseuwtoNzRl8dbQBw1NU42ehv7gM%2B%2FRmXYnPrHyrEV8UXZiav0D45NKfDa0FtAvXBi4rh1Y2%2BLJues4cB4UzgHPc1%2BLly1du%2FjULVjB0onpHNjlsz%2BtRbCOzhptJTv%2FFVqrdfJkVYnf2YDk4viEvwYL9zV3Sh829L7nukH0avPWhzaevGReovtudrybfjAPOgHPDf%2F8tNz%2F%2Bg%2Bw89zffltfu8%2BT%2F1w3GaPEp%2FzgPZkD%2F9Xa2MBBR9dL1wmm8TsqOp6vLXtxB97dEN%2FtB2D%2Bkhxdr13P%2BgddD%2Bz4YvS2F8Qk1pXCFVN8JzqNz3rQR9dMko%2BkUqfG4C2%2BkHyYaDjVwMeWbfdd2%2FXIx9ahumjDLjoffaHfwA7jL9TQOjb%2BhDP0YoVfjO6fho%2F3w6cGnsMO2GzJXUr%2F7uEHul6ZDh%2BfR%2F3hNLkPTXJ6azw49AL4lpvAmAa30N3AwHtHl6xzMEnh%2FZphCiEnPhmP002O46XT0tsxrmNMr9LBM7KjFzHlP4ACvYyCfWjJQcNzQ2cBFzGZXtdWAKdbMMfvviKGgGkcbBL6U%2FRZLpfafE5w4bkvMPfOojPrtDsMCu%2BkJL4wowhF3caN0ujdNHqtholmULmxPDgDPmRTM77Xo8%2Fkn2CGwRrNlDUHgeU6GDRDrWEoDRN%2Fuknor3NDsz5Z6fQREOrsQ1CMGF2RBJhWPYBp438swHTIz0cAU6J4gSAxYK4bptoY3jSujYZxg8a5dd0V%2BiKa4sG%2BOXnqfzUPE%2Fo0RsFD5Z4sKrdrYguws4MtdHszhcX4T2MLesPsotvNn1PC6ndweR6%2BMNwAC8%2FqFHq%2FrTk8Ey6gtmUBpPuJtYelMYcEhodZyGD8X6I4YBYxHNwO0Z878%2B%2FhozAu0DI41IW2QZFdl8YYDE7G0BXKGJA2ZyxaLMZgaDOdsP%2FonURR18WxCiTfe2aj18lLg6%2FmxHPfMK0QCZUvZv9p9Dz863juceeCBRroGqDVMode%2Babn0aShm%2Fh5Pe1K7RhX6hUxN6RzmdSoqUXZ6NWCtnT9l9A2M9qttlJCm1oV2vCQX6ZP5v3g%2Bm%2BZcPsG4RbY1m80gWcCMVUaxlTlaJAhu36LX6KnWFsfHqXQFJGkHaXIPlteEAL8TRGbKBFzF8s4TTC1OYgmjzGosbIBFyUfzoepCJ2Fid1F6GhuA9%2B35kXukLESNr1KtF0uFYXQdgH8dcqDPk7WG3N09%2FCcKRMZSb9Yy4wvYBG0cF%2BdHQyBl5AetJFN%2B7s4nTnq7lMl4ydMXAvzgkQtSW9J1nCLGsJ3Q28O47vy%2FitqoFSd2TUQ0g9XMCgNRKCVfu0T0KbVo%2FUAaCyZ3KMzN%2BBsKdwcMhsm1jHMyQhbvCCAr%2BD9eCmDcfk8plwk31xnhYZ6en9Bv%2B9XlvNWHuwRPRkr0tbGCix8eWEE7IGhTj0iu4FceB6ySjOksT1ed51ghah6dx1e8UhB8WMv21fXDwQjcTr9itE0n0PfRy%2F66HrPtcsDajdmCYELC3OnO3e1OiPY6fJgx3D6fRprP7UtDwtkczK5G%2FXNp9HDvXBDv8fw53TbRTs%2F9fkkjCbFhXiSc3sAWyUgoK8dFPlJkW84rkPryvEpZHOsHKyHoWciu0S%2FxpNozYFtxm9srMUCP4bJwIqKmlh%2FsIlXP5I02CJSvgK8%2FB%2B20JmurWUQcw9gOdiWUiZIj1q63ka2g1jfAxjZhrnaOR4eF6USqfi%2FpoyRJCLEvXfxnvTRkkgnksinBEoqezB2HFgeKtLIsG%2BZfIj8vTCYL2jJNkdWR2hnhr1EydQ7DMKONBAynNBVgLA6dSj2BvXy3qCfrvciAoo9JhTN7dbONjcfQyewNgxApvwOfcdFdJt%2FHmiTt%2BWh8vq%2BBcMtDWYowa3X6epAvPatNwys8o6cpYfYnhfOg9CDpwPuEa4sP6JpHnFj17ECpOFlinQ2TKphl8y9c2FuGu2KEAc3Xuf3v0QDQzYh3qsdk%2Be%2FAoLIeLeVg%2FXIV7Wk6VpJFFn1Yq763XiDmOTYDTn%2BjhUjO%2FSLS12IvjVGJj8O%2FtOU7yEMGeItUveaUxv8hkTrzwnFc%2BA6ujSdituPLhpsh%2FfchOpUphpZc5YvD2YjpzmGG5cQuA%2BQUl4ebIpjyRwSOFvQ4NfAW1TjWuJAW0uaStU6AW0XJuMiQinzFNid%2F4VuRLXEbMidohljb9Ag%2FkYCsSRMNQ1WHSNiWPPdUlCOxGtLU33w%2FbV4Fw6HmQjXtLHEG959w4ueODcF86CcBl2CjekA%2Bz3IASd7wNDGrvd5eTA%2FAD69%2FfLNmgEHnAevanelgZI7VPrieRWnPm4MKPONhTEbf14eSSZdQ%2B%2FIU5q4g6IvXkMnnoGJhyduDcMTvAGpzFLQx7bhPK9cZ3emoU%2F9yMkUvRjwCL1qfZzSAi61EzZiLsrTHsvCWw8si9Lkg8AaIAE1c5H%2BjOWh5YeIg%2F4D2Oh6hMBuRg5OhhuqXkR1pe3majXt3VRn4mXhLEYigsYIU6tTTDwySiMXa8LSw8lDNtAJymPGCQI3U5toecq9G1jL2KlwJkzMkKc7feZ0gZRTHtanBuYTlp%2BCUwS0PaRNhlGrCx3QePdJtHKU0sUqyjHL6TaMVn6zbgACECUc7ncySfJJSyMx794Eg8SXsfMa0xP9xiJk4vrByoPT73fyvIU4ozCHl5KnMPAg2ESSh%2BGPzi6cADQ3jkWNPlldo3mfV7JtpjJSnCsLCkgwXzk0q9ZuElssD83h%2BHhUMoMk923OTqCHw5xwCsl%2BZ1KiOpXVo5pBqEpTeHRex%2FYnlIFa4xrnQT7MfuGqHNiv6Xpkt606wScvAlvndU0LZi81BIGYHbxmLWf0IELotZhCbxdIsrEGOGbEmoUBiTPK3zv0gB8FpvTdBZNDTXXy5maLROXMriIpm4fr6Ko0cMYu6r1ZUYndRXJv9ln%2Fba2EYOGpUqkvCX087%2F3%2F8I1XWjs5%2FjseiBwM3gpH78nRmxVE97U67fgY34ez3Yz4OLsVH%2BTvRDLMQnOPmSU5F33jKJ1oz9wYh5EgL60KEYay24%2FNq6LLzLS7VJkZyXlVeksgXg35aE13ATPQdfOYU67a%2BxGXgryA8Kv2AYyzOftBlEZpa3XBtFlO%2F6PtUe78v0MDycZpWyRfrYCtpjpBBtQCb%2BRE6dWHOPGxKG3VidIObZfSLJAXo%2FRAPbpkl2yMdkRitOz5l89M1fPlpJEyXxdGDZXif6UxeEHaOziSbJR2RaJUF4rSsqWdLy9WyOU%2Fka1%2BTMM9ia8WDMBiymt9gO4pgpguPVDlTNf4A%2BdEB5YM58SfUvBnfAIIq1qC2bow3BOI4Y58CKd6g0gIfwjBnIgtA%2FZ5gvPGn0KHRHyLBm9idylXeieRszGm0ohaDoAnt6jFO9zl0ocHoKxQdVqwR%2Ba4RUGP1K54USQelTP0TDAXRbr9WduiOJat18rFVVnWn6q2KgasJlITEeui%2BINYcYiV5q%2BoHrEiNyuSgJQ%2FiD07xKoKtV2hKjTSLgezIjcskqwBmZhNY0%2BYmD1nj1u7TszqdLSk3j4WsuqhkWRDlpE%2FUA69vbCYk33JlDHk9yRTkripanImjaJt1jJKaJCWWityP0CrwK5nV029AFYVkf1cFEK1VIiC3xNF11xWlYp5FVeawCfiVTHmd%2FKqfAZLxaxKVQ5KLnHdRhj5k8IbDqEfFtuZk58Si9L4SHzM1DMqZ7coHx6tMUubeMnKQSlzhkrrEbkgdy5AVuQ0SU1%2B7H8dPQ37Tz8eSd%2BO4e3wfiAzSvUAlTVpVGYk%2FAmnMoOqNlwGFTHZlFYktWpKemUIIiQju0qj%2Bq%2B0ioSkvd7iCMklH%2BsOMx7htezgvQJGimTfdsNFI1%2B5S8za0rp7SSKvURYj2U2w6BKQWFJoU7Qgla%2FuwDsO565k9lV5rI2RiCZ2%2BkXUhCkW1ax05qXlWSUDS5x5ARUIcD5d1VPekwX2DlfL1s8hx%2BNM6Zu7h581S3ON9jGLo6cml5410G%2BfsRuv2rKxiyvytXBaD8%2BLXUYwVbn4yQPLJS5gJQgj%2B9e8Ji2RsMOoOvWJMbKrEl6zie5If%2B2CQFbs7MZ2X6uivTTdssPlFvk0tN%2FluOejfaEOWYXkl5fN16lo5%2BZMyL%2FLF8pH%2FiTHvErKSyuv0eFy2Mjpp125P1T9uD9UN6SpZJJ3IM7WIUoK%2Ft%2FfPJrTp8cfiUt0%2BmM8Nh%2F%2FrtEnqsszprgcN5fBXXNJ8U9uQBqB4lR70jA4yQmXbie16BBdcaTicvJcHKlytaGizhqEXt2qyCVtNy%2BRmp%2BMXLiORBhQ1Ep25uSTi47zFEcuyV6lmsiVFhTJk6tVFbWkia3uJ%2FIZ5Wu5vOE9IyK50p0hQjFp64vWNOSJr%2B4ncuHsKA2G1A7XjinWqYxi0iQYrhzDQbILrVeabiiWyVvywuf3DQe3JExCbO1So0z3rLFtQvhut0h5VZfmc1MV7rZbSjmvS%2FJGY9Ek1z%2FuednfE6fXyZcuTUuvK7gy4Bez%2FzR6Hu7oMc9TAOzOBYsG7ulsg3wdyuym59EkVqp62pXaMa5wCafdDn%2BBRbu4uitLQ5zK0JcrQRxHZEE5brcSxOEhv0yfzPvB9d8yIfcNwi0Sn79xbbnzgJkqEWfczZYYOPPXYItfogdZW5%2FWRPh6URzlUaSA82x5QUj0RMQtSvTcxTlOE1IMB2WJbjL5Q6zy743k5yak8Do%2B7Lj9j1P2xhzdPTxnukVG1S%2FWMuMOWBgt3FdnB1uoLxC%2FXO7syDh8vXdgIMlR%2BKrK3elItApUdc8Rs2FihSNqr30LAvgK3o8XN8wKyt9cbCDdPL2%2FoN%2F3K8t5Kw%2F2CIhf6c7aWEG53a0ZBnTHrbQJxXkILXnldlWVsQdejXJUdan5Fq42j5UVPw5h%2Ber6gWAwFgtAZX3n6QG1G7MEwoWFeVQaYnEeyNMlIo9r%2B%2F1CfQCpsXlYLpuTyd2obz6NHu6Fm%2F%2B9TpnGdOuSbItQfusSVeXujZTA43IT00oMhdXlzyQxd7hTLuZIALOAhy10pmtrGcQcBFgOtq2UCdKocEOAw7xB%2BC5yZY1PVJURIMANkIvSjVT8HzdtiOq%2Bx9sogpuepBIIo8dhlH%2BPVDO8J0A%2BRP5eGMwXtHybIwsktCvpcsLTFVAeDHl7LImGYXVqUewh6uU9RD9d70UEGHtMMBYjiB9DJ2oNSA%2BY8jz0HRfRbWfSwE2VVk1AVbnd4oIBV0PjiygYyll6iPV54TyImkycCLlHuMKdLN4pzO1rsJPr3UzZfufC4DRpLcDVZLPvjyaW2YddDBjy%2FFdAMJllUdavcsnTufj9ncKFXeX9laN6D3Psmhx%2Fb0hrNjeGvh9Fx3wPYcgQcpHa15za4DdsMDvO1ct5dHm6FR6gHrhV1kIu0q1MNbLsLF8e0EZOcww3LiFxHyD1vDzYFM2yRSriFnX5NfAWZ9OOuSVPtdK43e2XL%2BmOyf3KmGNv0CAeSAKycvflSip60cBoS1SBuH3fon0NAnLeP6pzY7k3vPuGFz7xdwrmQzldugScPa0rhzZ2x8%2FLg%2FkB8OldmW%2FWrNi5vkZ%2B1ZaWkZoWc%2Fg38CtOzdwYUKYcC2U4Q41LnknX1TsSladTHOgXpqtH%2FXc9PHVrGJ7gG0gll4I%2Btg3n7MbOaXhUP3I6RS8GPKKvWq%2BnvOBM7V%2FjfY8l4q0HlkWZ8kFoDZCYmrlIk8ZS0fJDxEX%2F2dE4%2FBECuxm5PBluqXox1ZW3z6vV5kqvumN4vppk1Iv7BHMvSbhOQ1FYGnmp4XdOs9oACxHnZmoTbU%2B5dwNrGbsYzoSRGRJ1KK6UxksNLkiY5WG1Ki7zIzipgJFMQkcV6HqFUQWJSnaYxTD6GFysxhxznW7DaOX38HJpr3t9TpLc1PKIzO2lZhD5MrZkY4qi31iOTFw%2FWHlw%2Bv1Onvvwq1lATMl1GHgQbCLxw3BRZxdOAJobx6JGn6yu0bzPK9lN4%2BkML88s07l92qLBWbWSk5hleXAOx8fjkhlHuW%2FXdgI9HAWFM072%2B5YSDaqsJdUMQ1We3qNz%2B7o%2FoSTUGtc4g%2FJh9guZ%2BI1cinp14k9ipLbO7a0WzGJqiBAxO3jdWs7oQYToazFF3y6YZGMNcECJNQsDEoZUSKf3gB9FrfTdBZNLTfVGVNICCcyZDc%2BE88grpqYm6f1iGuQpZQjLb5CedNo9zzYocdpQXelXao%2Buw9s6thFKuf9CaSjZKVi6yO49quDO0ky0prz2AhrixZ682jIFDbphwLFNHEsjVd08Wk0aDQsCatnDKp%2BtnnFrqVhVqguoeik7vTQId1KrenAo6VA1hEK1gu6NHfLTENtxVKuQwxZ07GLyYZ2o7gliv6WRqme%2FvT%2BYTvVi2ZhO7Faq4u0nwHEriempC8eJGnOW1tnn6gYdhxXWpvzq0pTfyttBqy1VKPsVa6b9ge1l2Gw1wFYTCdtk4%2FMPbM8PtrpGdXFVFRpsl4RbXSRuq2hqnW5yXlpT6zjUsjZ226Y3rkrdh%2FlxWyrVRg8lHbeMrbFP3dd6VysfapO%2BmowdqrE1ktwlPEjbdWoJ3XXSxJbzY3Isdjm%2FS%2BBYeq3WeFk8ljKiuc3xUgVAVamaY0luGX12HGtX9ylW7HTFDEvXDgowgQxLbovpmPxFmNh4NpoL4L18wZRQIkrg5BYc3bHA%2F%2F7io%2FMR88%2BMS8gCEeKBsirN6ZKU1%2FJRKgXqSO%2BMSxs%2BT3AFuafQIcnex0bLTNFXbQZuE%2F9Fd%2Fdtq5rIOUapulKl%2Bi61UrvyNIuESQjRLLSyXoGGTfINXC9YuyvXAfYwO0sx4eyaO9fdxrj7BYPgPYYRCAO3iMpUP0gPIv1Ak6Qg7AhPYaoCwumlSV%2FUFWeoGf1oUfdtN1wsbVKP5tgl3R9gxpAPYPtp3lBnBvdT6sx0encmy17tlVqTSFv3bflIEige1sXPlWhX%2BP7mb%2BBZAP11wg30sN2CTUIHh07bZEilcBUEftAEPnp94EJgk1ZCQdJBqHQhzmhqgsWv0A%2BSK4hSkrxvA2cVghVsuggqnrWAO8Z5QY%2FBsZXk3Zi9Je%2B5W6LN4mftumQJAa4s1vQRk0TX7Pq05GvhpAauC9HfretbJAniwHxu3F%2FWrhkKPBjM1%2BV3bcuBzWR1kO6C2vYt%2F53AxrLfo7cwqWFz%2FuuluQV4MKLQjYi6T176734AN83Qig6bYLu10WyQs9Gpa%2FS4lzGYT8m5G7KSI60wTjSM0TSFKxfHuv4Y0e9E1z%2B6MxdNPXn98Pa%2Bgk70%2BscsdIIwet1Hc4JWFF6ArEfgmqeY5QCSm8h4Bn32K7R%2FQ4wB9N59VGGJcZePxkN09axlNIkbJMMsJze1SPUnv9VOMs%2Bx9YKv8FazL1qrFw1FTNbohfpXdCk2z5qxpWWSdQi86NnKDMxfVoRJNOkB1XiY5K8ejVYyjOIV7m%2BBs3uNv%2BawYjlr9E2DXaNF0%2BPMfPzny%2B307vovdNOt7c7StmCk9GOhqUcxQTn6LCUZgJnQCRKAp0VRKfq0I68sTLslUPNL5YnMkLtUA8k2bFrtXiO3ZXOlKElI3g5nEjqYIPigOcT%2BgrTBbW3unh5lEPaOjoxDj7%2FSs59W0c4stbqS7fpp8%2FU%2Bi%2FvBbD2XxHMdVDIyjvMQBliOJMqHFKuepbVpxSWrlbbGuvIKV7SPbGHLmlTxPraT%2FGlJLooXZav0XWTez3cb5Mcw4HaJmLRPP3WjpbTsdmXRsvMRn%2F4BrkpE8geYLddqqYsnqj21GEamqXS6GX8KBt3yz6g6XLgjNFyYkfMmBBCZRNVVvZHfnFGUA4EQDIl61vDKuHqalnNsi6UzgFfSyFcEFzllvy%2B16UVG1qiG3sj59JoIjWrq5dvh1SNHLBWPZ%2B8vaf6Tg2rR2ywatsm%2BAFp3nSQHJsZSM9FZOKCd3EK5Hd3lEln7eyGs6pSv2aBzJ7kXAx2RqbYMpKDrSMiqBtZPdUqUSl8aXA2Ta9mDYjJESXtOaN71Il1SpiFeqekKlXZdRiJBBRsKTKZ1MEyBUw6esHOwU12i113VMogrLikx9cKNbc4DN29J3IEZtCepw3Ewc4PA3TBMjcClFqQbGYGJtcCpfkTPF2QQ6sXllpl%2FWdSFtNXG1VvsYxyuKju6TYnA0uaHzHk7MizlLM3oJ%2FwxjyEKI2SkQ9OEdkfKK27WFZqClpjt5yA59qu7lciIUvO7kskjXUZwBQRdyJJjea7G7syySammqI9TYR8CT3QAQvTnJ5xJDvvSqUWsKTRjlVe8zhCZyKTVsoQz67PV7TUKESU44eUI4%2FPYQNT2DjfJqZEm6NBz8bZZtsDRulqP3QXEV%2Fw%2F%3C%2Fdiagram%3E%3C%2Fmxfile%3E"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
+            <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                Diagram interaktif: Zoom dengan scroll mouse, navigasi dengan klik-tarik, klik ganda untuk detail.
+            </p>
+        </div>		
+			<!-- Gambar tambahan - Topologi Arsitekture Hybrid -->
+    <div class="image-container" style="margin-top: 20pt;">
+        <div style="text-align: center;">
+            <img src="arsitekture-hybrid-onprem-dan-cloud.jpg" 
+                 alt="Topologi Wireless Dosen"
+                 style="max-width: 800px; width: 150%; border: 1px solid #ccc; padding: 10px; background: white;">
+            <p style="text-align: center; font-size: 11pt; margin-top: 10px; font-weight: bold;">
+                Gambar  Topologi Arsitekture Hybrid
+            </p>
+        </div>
+            
+        </div>
+        
+        <div id="bab3-2">
+            <h3>3.2 Komponen Kunci dan Strategi Fault-Tolerance</h3>
+            
+            <h4>3.2.1 Database Layer</h4>
+            <ul>
+                <li><strong>Cluster Configuration:</strong> 3-node streaming replication</li>
+                <li><strong>Failover Strategy:</strong> Automatic promotion menggunakan cluster manager</li>
+                <li><strong>Data Consistency:</strong> Synchronous replication untuk primary-standby</li>
+                <li><strong>Backup Strategy:</strong> Transaction log archiving + base backups</li>
+            </ul>
+            
+            <h4>3.2.2 Compute Layer (Kubernetes/Container Platform)</h4>
+            <ul>
+                <li><strong>Control Plane:</strong> 3 master nodes dengan distributed consensus</li>
+                <li><strong>Worker Nodes:</strong> 9 worker nodes dengan anti-affinity rules</li>
+                <li><strong>Self-healing:</strong> Pod restart otomatis, node replacement</li>
+                <li><strong>Auto-scaling:</strong> Horizontal scaling berdasarkan metrics</li>
+            </ul>
+            
+            <h4>3.2.3 Storage Layer</h4>
+            <ul>
+                <li><strong>Distributed Storage:</strong> Object storage dengan erasure coding</li>
+                <li><strong>Data Durability:</strong> 11x9s (99.999999999%)</li>
+                <li><strong>Consistency Model:</strong> Strong consistency guarantees</li>
+            </ul>
+            
+            <h4>3.2.4 Messaging & Caching</h4>
+            <ul>
+                <li><strong>Message Queue Cluster:</strong> 3-node dengan shared storage</li>
+                <li><strong>Distributed Cache:</strong> Multi-node dengan automatic failover</li>
+            </ul>
+        </div>
+        
+        <div id="bab3-3">
+            <h3>3.3 Strategi Fault-Tolerance per Layer</h3>
+            
+            <h4>3.3.1 Application Layer (OpenShift/Kubernetes)</h4>
+            <ul>
+                <li><strong>Control Plane High Availability:</strong> 3 master nodes dengan <strong>Raft consensus protocol</strong> untuk menjaga kuorum. Jika 1 master down, 2 master tersisa dapat membuat keputusan.</li>
+                <li><strong>Worker Node Redundancy:</strong> 9 worker nodes dengan <strong>pod anti-affinity rules</strong> memastikan pod replicas tidak berada di node yang sama.</li>
+                <li><strong>Horizontal Pod Autoscaler:</strong> Scale berdasarkan CPU (70%) atau custom metrics.</li>
+            </ul>
+            
+            <h4>3.3.2 Database Layer (PostgreSQL Cluster)</h4>
+            <ul>
+                <li><strong>Streaming Replication:</strong> Primary → 2 standby dengan <strong>synchronous replication</strong> untuk transaksi.</li>
+                <li><strong>Automatic Failover:</strong> Menggunakan <strong>Pgpool-II</strong> untuk:
+                    <ol>
+                        <li>Monitoring health primary</li>
+                        <li>Voting among standbys</li>
+                        <li>Promoting hottest standby</li>
+                        <li>Re-routing connections</li>
+                    </ol>
+                </li>
+                <li><strong>Connection Pooling:</strong> PgBouncer untuk mengurangi overhead connection dan fast failover.</li>
+            </ul>
+            
+            <h4>3.3.3 Storage Layer</h4>
+            <ul>
+                <li><strong>MinIO Erasure Coding:</strong> 4 nodes dengan erasure coding (2 data + 2 parity) → toleransi 2 node failure.</li>
+                <li><strong>Strong Consistency:</strong> Read-after-write consistency untuk semua operasi.</li>
+            </ul>
+            
+            <h4>3.3.4 Messaging Layer (ActiveMQ)</h4>
+            <ul>
+                <li><strong>Master-Slave with Shared Storage:</strong> 3 nodes dengan shared NFS/GFS2. Jika master down, slave terpilih mengambil alih.</li>
+                <li><strong>Message Persistence:</strong> Journal messages ke shared storage untuk mencegah data loss.</li>
+            </ul>
+            
+            <h4>3.3.5 Caching Layer (Redis Cluster)</h4>
+            <p>Redis dalam arsitektur ini berfungsi sebagai <strong>distributed cache</strong> untuk:</p>
+            <ol>
+                <li><strong>Session storage</strong> - menyimpan user session state</li>
+                <li><strong>API response caching</strong> - cache frequent queries</li>
+                <li><strong>Rate limiting</strong> - kontrol rate API requests</li>
+                <li><strong>Message broker supplement</strong> - cache untuk ActiveMQ messages</li>
+            </ol>
+            
+            <h4>3.3.6 Load Balancing Layer (HAProxy)</h4>
+            <p>HAProxy berada di <strong>layer terdepan</strong> (edge layer), menerima permintaan dari pengguna → mendistribusikan ke worker nodes di Kubernetes → yang kemudian berkomunikasi dengan layer database (PostgreSQL), cache (Redis), messaging (ActiveMQ), dan storage (MinIO). Dengan demikian, HAProxy menjadi <strong>gateway terkelola dan tahan gagal</strong> untuk seluruh platform transaksi:</p>
+            <ul>
+                <li><strong>Menghilangkan Single Point of Failure (SPOF):</strong> Dengan konfigurasi HA aktif-pasif, HAProxy sendiri tidak menjadi SPOF (mengatasi masalah Bab 2.1 poin 1).</li>
+                <li><strong>Mendukung Automated Recovery:</strong> Failover otomatis di level load balancer berkontribusi pada <strong>RTO &lt; 2 menit</strong> (Bab 2.3).</li>
+                <li><strong>Meningkatkan Scalability:</strong> Memungkinkan horizontal scaling dengan menambah worker nodes tanpa mengganggu layanan (Bab 4.2).</li>
+                <li><strong>Mendukung Multi-AZ Deployment:</strong> Dapat dikonfigurasi untuk mendistribusi lalu lintas antar Availability Zones (sesuai Bab 2.3 poin 3).</li>
+            </ul>
+        </div>
+        
+        <div id="bab3-4">
+            <h3>3.4 Skenario Kegagalan dan Recovery Strategy</h3>
+            <table>
+                <caption>Skenario Kegagalan dan Strategi Pemulihan</caption>
+                <thead>
+                    <tr>
+                        <th>Failure Scenario</th>
+                        <th>Detection Method</th>
+                        <th>Immediate Action</th>
+                        <th>Recovery Procedure</th>
+                        <th>RTO Estimate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Single App Node Crash</strong></td>
+                        <td>Liveness probe (5s interval)</td>
+                        <td>Pod restart, traffic reroute</td>
+                        <td>1. Kubelet restarts pod<br>2. Jika gagal → reschedule</td>
+                        <td>30-60 detik</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database Primary Failure</strong></td>
+                        <td>Patroni health check (10s)</td>
+                        <td>Promote standby to primary</td>
+                        <td>1. Failover voting (≤15s)<br>2. Promote hottest standby<br>3. Reconfigure clients</td>
+                        <td>60-90 detik</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complete AZ Outage</strong></td>
+                        <td>Global LB health check (30s)</td>
+                        <td>Redirect all traffic to other AZs</td>
+                        <td>1. DNS failover (TTL 60s)<br>2. Scale up in other AZ<br>3. Async data sync</td>
+                        <td>2-5 menit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Partition</strong></td>
+                        <td>Consensus heartbeat timeout</td>
+                        <td>Quorum-based decision making</td>
+                        <td>1. Isolate partition<br>2. Majority side continues<br>3. Rejoin after recovery</td>
+                        <td>1-3 menit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Corruption</strong></td>
+                        <td>Checksum validation error</td>
+                        <td>Block access to corrupted data</td>
+                        <td>1. Restore from backup (last known good)<br>2. Point-in-time recovery<br>3. Data validation</td>
+                        <td>15-60 menit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cascading Failure</strong></td>
+                        <td>Multiple alerts correlation</td>
+                        <td>Degrade service, activate DR site</td>
+                        <td>1. Isolate failure domains<br>2. Gradual recovery per component<br>3. Validation sebelum full restore</td>
+                        <td>30-60 menit</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <section id="bab4">
+        <h2>BAB 4 - ANALISIS PERFORMA / SCALABILITY / BOTTLENECK</h2>
+        
+        <div id="bab4-1">
+            <h3>4.1 Analisis Performa dan Availability</h3>
+            <table>
+                <caption>Tabel 1: Availability Analysis per Komponen</caption>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Nodes</th>
+                        <th>Failure Tolerance</th>
+                        <th>Individual Availability</th>
+                        <th>Contribution to Overall</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Database Cluster</strong></td>
+                        <td>3</td>
+                        <td>1 node (33%)</td>
+                        <td>99.95%</td>
+                        <td>99.99% dengan failover</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control Plane</strong></td>
+                        <td>3</td>
+                        <td>1 node (33%)</td>
+                        <td>99.99% (distributed consensus)</td>
+                        <td>99.999%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application Layer</strong></td>
+                        <td>9</td>
+                        <td>3 nodes (33%)</td>
+                        <td>99.9%</td>
+                        <td>99.999% dengan load balancing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage</strong></td>
+                        <td>4</td>
+                        <td>2 nodes (50%)</td>
+                        <td>99.999999999%</td>
+                        <td>~100%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Load Balancer</strong></td>
+                        <td>2</td>
+                        <td>1 AZ (50%)</td>
+                        <td>99.95%</td>
+                        <td>99.99%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Overall System</strong></td>
+                        <td><strong>-</strong></td>
+                        <td><strong>33% node failure</strong></td>
+                        <td><strong>99.99% SLA</strong></td>
+                        <td><strong>≈ 52 menit downtime/tahun</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="bab4-2">
+            <h3>4.2 Scalability Analysis</h3>
+            <p><strong>Kapasitas Sistem:</strong></p>
+            <ul>
+                <li><strong>Throughput:</strong> 5,000 requests per minute (RPM)</li>
+                <li><strong>Database:</strong> 2,000 transactions per second (TPS)</li>
+                <li><strong>Concurrent Users:</strong> 10,000+ users</li>
+                <li><strong>Data Storage:</strong> 10+ TB dengan expansion capability</li>
+            </ul>
+        </div>
+        
+        <div id="bab4-3">
+            <h3>4.3 Identifikasi Bottleneck</h3>
+            
+            <h4>4.3.1 Potential Bottlenecks:</h4>
+            <ol>
+                <li><strong>Database Write Scaling:</strong> Single primary untuk writes</li>
+                <li><strong>Inter-AZ Latency:</strong> Synchronous replication performance</li>
+                <li><strong>Consensus Performance:</strong> Cluster coordination at scale</li>
+                <li><strong>Storage I/O:</strong> Shared storage contention</li>
+            </ol>
+            
+            <h4>4.3.2 Mitigation Strategies</h4>
+            <table>
+                <caption>Bottleneck Identification dan Mitigation</caption>
+                <thead>
+                    <tr>
+                        <th>Bottleneck</th>
+                        <th>Impact</th>
+                        <th>Mitigation Strategy</th>
+                        <th>Expected Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Database Write Scaling</strong></td>
+                        <td>Single primary bottleneck</td>
+                        <td>Implement sharding by transaction ID range</td>
+                        <td>3x write throughput</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inter-AZ Latency</strong></td>
+                        <td>Sync replication delay</td>
+                        <td>Use semi-sync replication with quorum writes</td>
+                        <td>Reduce latency by 40%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage I/O Contention</strong></td>
+                        <td>High latency under load</td>
+                        <td>Implement SSD caching layer</td>
+                        <td>5x IOPS improvement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consensus Overhead</strong></td>
+                        <td>Election time during failover</td>
+                        <td>Optimize heartbeat intervals and timeout values</td>
+                        <td>Reduce failover time 30%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <section id="bab5">
+        <h2>BAB 5 - KESIMPULAN DAN REKOMENDASI</h2>
+        
+        <div id="bab5-1">
+            <h3>5.1 Kesimpulan</h3>
+            <p>Desain sistem fault-tolerant untuk platform transaksi finansial telah memenuhi semua requirement dengan:</p>
+            <ol>
+                <li><strong>High Availability:</strong> Mencapai target SLA 99.99% melalui arsitektur active-active</li>
+                <li><strong>Fault Tolerance:</strong> Bertahan dari kegagalan hingga 33% node tanpa service disruption</li>
+                <li><strong>Automated Recovery:</strong> RTO &lt; 2 menit untuk sebagian besar failure scenarios</li>
+                <li><strong>Data Protection:</strong> RPO = 0 dengan synchronous replication dan backup strategies</li>
+            </ol>
+            <p>Sistem ini merupakan contoh implementasi komputasi terdistribusi yang matang dengan pertimbangan careful trade-off antara availability, consistency, dan cost.</p>
+        </div>
+        
+        <div id="bab5-2">
+            <h3>5.2 Rekomendasi</h3>
+            
+            <h4>5.2.1 Untuk Implementasi:</h4>
+            <ol>
+                <li><strong>Prioritas 1:</strong> Implement chaos engineering testing framework</li>
+                <li><strong>Prioritas 2:</strong> Setup comprehensive monitoring dengan AIOps capabilities</li>
+                <li><strong>Prioritas 3:</strong> Document detailed runbooks untuk setiap failure scenario</li>
+            </ol>
+            
+            <h4>5.2.2 Untuk Optimasi:</h4>
+            <p><strong>Short-term (3 bulan):</strong></p>
+            <ul>
+                <li>Implement database connection pooling</li>
+                <li>Add distributed cache untuk frequent queries</li>
+                <li>Setup automated backup verification</li>
+            </ul>
+            
+            <p><strong>Medium-term (6 bulan):</strong></p>
+            <ul>
+                <li>Implement database sharding untuk write scaling</li>
+                <li>Adopt service mesh untuk advanced traffic management</li>
+                <li>Setup multi-region disaster recovery</li>
+            </ul>
+            
+            <p><strong>Long-term (12 bulan):</strong></p>
+            <ul>
+                <li>Implement machine learning untuk predictive failure detection</li>
+                <li>Adopt GitOps untuk infrastructure automation</li>
+                <li>Consider hybrid multi-cloud strategy</li>
+            </ul>
+            
+            <h4>5.2.3 Best Practices:</h4>
+            <ol>
+                <li><strong>Regular Testing:</strong> Conduct quarterly disaster recovery drills</li>
+                <li><strong>Documentation:</strong> Maintain updated runbooks and architecture diagrams</li>
+                <li><strong>Training:</strong> Continuous skill development untuk operations team</li>
+                <li><strong>Monitoring:</strong> Implement SLO-based alerting daripada traditional threshold</li>
+            </ol>
+        </div>
+    </section>
+    
+    <section id="pustaka" class="references">
+        <h2>DAFTAR PUSTAKA</h2>
+        <ol>
+            <li>Kleppmann, M. (2017). <em>Designing Data-Intensive Applications</em>. O'Reilly Media.</li>
+            <li>AWS Well-Architected Framework. (2024). <em>Reliability Pillar Whitepaper</em></li>
+            <li>Kubernetes Documentation. (2024). <em>Production-Grade Cluster Management</em></li>
+            <li>Nygard, M. T. (2018). <em>Release It! Design and Deploy Production-Ready Software</em>. Pragmatic Bookshelf.</li>
+            <li>PostgreSQL Global Development Group. (2024). <em>High Availability, Load Balancing, and Replication</em></li>
+            <li>Tanenbaum, A. S., & Van Steen, M. (2017). <em>Distributed Systems: Principles and Paradigms</em>. Pearson.</li>
+            <li>Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). <em>Distributed Systems: Concepts and Design</em>. Addison-Wesley.</li>
+            <li>Google. (2024). <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly Media.</li>
+        </ol>
+    </section>
+    
+    <footer>
+        <p>Laporan Desain Sistem Fault-Tolerant - Platform Transaksi Berbasis Microservices</p>
+        <p>Dokumen ini disusun untuk memenuhi kebutuhan analisis dan desain sistem fault-tolerant.</p>
+    </footer>
+    <script
+        // Smooth scrolling untuk navigasi
+        document.querySelectorAll('.toc a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Highlight section saat scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.toc a');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 100) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+		
+		
+		   // Fungsi untuk navigasi ke section tertentu
+        function navTo(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                // Scroll ke element
+                window.scrollTo({
+                    top: element.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+                
+                // Update tombol aktif
+                updateActiveNavButton(sectionId);
+                
+                // Tambahkan efek visual pada section
+                highlightSection(element);
+            }
+        }
+        
+        // Fungsi untuk update tombol navigasi aktif
+        function updateActiveNavButton(sectionId) {
+            // Reset semua tombol
+            const buttons = document.querySelectorAll('.page-navigation button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Set tombol yang sesuai sebagai aktif
+            const activeButton = document.getElementById(`nav-${sectionId}`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

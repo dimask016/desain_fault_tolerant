@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentasi: Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .presentation-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            padding: 20px;
+            background: rgba(44, 62, 80, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .presentation-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .presentation-header .author-info {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .slides-container {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            min-height: 700px;
+        }
+        
+        .slide {
+            display: none;
+            padding: 40px;
+            height: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .slide-header {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .slide-header h2 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slide-header h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .slide-content {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .slide-content ul, .slide-content ol {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        
+        .slide-content li {
+            margin-bottom: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        
+        table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table td {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .highlight {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .architecture-diagram {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .architecture-diagram h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .diagram-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(44, 62, 80, 0.9);
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-indicator {
+            font-size: 1.1rem;
+        }
+        
+        .slide-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .slide-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--secondary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+        
+        .reference-list {
+            font-size: 0.9rem;
+            padding-left: 20px;
+        }
+        
+        .reference-list li {
+            margin-bottom: 5px;
+        }
+        
+        .objective-box {
+            background: #e8f4fc;
+            border: 1px solid #b3e0ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .recommendation-card {
+            background: white;
+            border-left: 5px solid var(--success-color);
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .component-table {
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .presentation-container {
+                padding: 10px;
+            }
+            
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .slide-nav {
+                order: 1;
+            }
+            
+            .slide-title {
+                order: 2;
+            }
+            
+            .slide-indicator {
+                order: 3;
+            }
+            
+            .diagram-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <header class="presentation-header">
+            <div class="logo">
+                <i class="fas fa-server logo-icon"></i>
+                <div>
+                    <h1>Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</h1>
+                    <div class="author-info">
+                        <p>Dimas Kurniawan - 25120300016 | Kelas: Paralel and Distributed Computer (Disc3)</p>
+                        <p>Dosen Pengajar: Dr. Fandy Neta, S.Pd., M.Pd.T | Ilmu Komputer - 2025</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="slides-container">
+            <!-- Slide 1: Cover -->
+            <div class="slide active" id="slide1">
+                <div class="slide-header">
+                    <h2><i class="fas fa-home"></i> Halaman Judul</h2>
+                </div>
+                <div class="slide-content" style="text-align: center; padding-top: 100px;">
+                    <h1 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 30px;">Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</h1>
+                    <div style="font-size: 1.3rem; margin-bottom: 50px;">
+                        <p>Laporan Tugas Mata Kuliah Paralel and Distributed Computer</p>
+                    </div>
+                    <div style="background: var(--light-color); padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 20px;">Disusun Oleh:</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Dimas Kurniawan</p>
+                        <p style="font-size: 1.2rem;">NIM: 25120300016</p>
+                        <hr style="margin: 20px 0;">
+                        <p>Dosen Pengajar: Dr. Fandy Neta, S.Pd., M.Pd.T</p>
+                        <p>Program Studi Ilmu Komputer - 2025</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Pendahuluan -->
+            <div class="slide" id="slide2">
+                <div class="slide-header">
+                    <h2><i class="fas fa-book-open"></i> BAB 1: Pendahuluan</h2>
+                </div>
+                <div class="slide-content">
+                    <p>Dalam era digital yang terus berkembang, ketergantungan pada sistem komputasi terdistribusi telah menjadi fondasi kritis bagi operasi bisnis modern.</p>
+                    
+                    <div class="highlight">
+                        <p><strong>Desain Sistem Fault-Tolerant</strong> muncul sebagai solusi fundamental dalam menghadapi realitas ini. Konsep ini merujuk pada kemampuan sistem untuk terus beroperasi dengan benar meskipun terjadi kegagalan pada beberapa komponen penyusunnya.</p>
+                    </div>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Tujuan Penulisan Laporan</h3>
+                    <ol>
+                        <li>Menganalisis kebutuhan <em>fault tolerance</em> pada platform transaksi berbasis microservice.</li>
+                        <li>Merancang arsitektur yang tahan terhadap kegagalan node, zona, dan regional.</li>
+                        <li>Mengevaluasi performa, <em>scalability</em>, dan <em>recovery capability</em> sistem yang diusulkan.</li>
+                        <li>Memberikan rekomendasi implementasi dan pengembangan ke depan.</li>
+                    </ol>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Ruang Lingkup</h3>
+                    <p>Meliputi desain arsitektur pada level infrastruktur dan platform, dengan fokus pada:</p>
+                    <ul>
+                        <li>Mekanisme deteksi kegagalan</li>
+                        <li><em>Failover</em> otomatis</li>
+                        <li><em>Data consistency</em></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Analisis Permasalahan -->
+            <div class="slide" id="slide3">
+                <div class="slide-header">
+                    <h2><i class="fas fa-search"></i> BAB 2: Analisis Permasalahan</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color);">Deskripsi Masalah</h3>
+                    <p><strong>Konteks Sistem:</strong> Platform transaksi dengan karakteristik:</p>
+                    <ul>
+                        <li>Volume transaksi: 10.000+ transaksi harian</li>
+                        <li><a href="bab-2-data-sensitif.html" target="_blank"> sensitif: Transaksi dengan compliance ketat (PCI-DSS, GDPR)</a></li>
+                        <li>Pengguna: Pelanggan ritel, klien korporat, administrator</li>
+                        <li>Ketersediaan: Diperlukan 24/7 tanpa interruption</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Permasalahan Utama</h3>
+                    <ol>
+                        <li><strong>Single Point of Failure (SPOF):</strong> Infrastruktur existing rentan terhadap kegagalan komponen tunggal.</li>
+                        <li><strong>Manual Recovery:</strong> Proses recovery memakan waktu 30+ menit, bergantung pada intervensi manusia.</li>
+                        <li><strong>Data Inconsistency:</strong> Risiko inkonsistensi data saat failover karena asynchronous replication.</li>
+                        <li><strong>Scalability Limitation:</strong> Arsitektur monolitik sulit diskalakan secara horizontal.</li>
+                        <li><strong>Complex Failure Detection:</strong> Tidak ada mekanisme deteksi kegagalan real-time yang terintegrasi.</li>
+                    </ol>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Analisis Kebutuhan Fault Tolerance</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kebutuhan</th>
+                                <th>Deskripsi</th>
+                                <th>Metrik Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>High Availability</strong></td>
+                                <td>Layanan tetap tersedia selama maintenance/kegagalan</td>
+                                <td>SLA 99.99% (≤52 menit downtime/tahun)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fault Tolerance</strong></td>
+                                <td>Toleransi terhadap kegagalan multiple nodes</td>
+                                <td>Survive 33% node failure</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Consistency</strong></td>
+                                <td>Konsistensi data transaksi finansial</td>
+                                <td>ACID compliance, RPO = 0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance</strong></td>
+                                <td>Response time cepat untuk user experience</td>
+                                <td>&lt; 2 detik per transaksi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Arsitektur Sistem -->
+            <div class="slide" id="slide4">
+                <div class="slide-header">
+                    <h2><i class="fas fa-project-diagram"></i> BAB 3: Arsitektur Sistem Fault-Tolerant</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color);">Komponen Utama Arsitektur</h3>
+                    
+                    <div class="architecture-diagram">
+                        <h3>Diagram Arsitektur Sistem Fault-Tolerant</h3>
+                        
+                        <!-- Container untuk diagram -->
+                        <div class="diagram-container">
+                            <!-- draw.io diagram -->
+<div class="mxgraph" style="max-width:100%;border:1px solid transparent;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;nav&quot;:true,&quot;resize&quot;:true,&quot;page&quot;:1,&quot;dark-mode&quot;:&quot;light&quot;,&quot;toolbar&quot;:&quot;pages zoom layers tags lightbox&quot;,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile host=\&quot;app.diagrams.net\&quot; agent=\&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36\&quot; version=\&quot;29.2.9\&quot; pages=\&quot;2\&quot;&gt;\n  &lt;diagram name=\&quot;Enterprise OpenShift Architecture - Full\&quot; id=\&quot;UvMvyTIOfAQ3RDXCAwFO\&quot;&gt;\n    &lt;mxGraphModel dx=\&quot;4168\&quot; dy=\&quot;2248\&quot; grid=\&quot;1\&quot; gridSize=\&quot;10\&quot; guides=\&quot;1\&quot; tooltips=\&quot;1\&quot; connect=\&quot;1\&quot; arrows=\&quot;1\&quot; fold=\&quot;1\&quot; page=\&quot;1\&quot; pageScale=\&quot;1\&quot; pageWidth=\&quot;850\&quot; pageHeight=\&quot;1100\&quot; math=\&quot;0\&quot; shadow=\&quot;0\&quot;&gt;\n      &lt;root&gt;\n        &lt;mxCell id=\&quot;0\&quot; /&gt;\n        &lt;mxCell id=\&quot;1\&quot; parent=\&quot;0\&quot; /&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=14;fillColor=#e1d5e7;\&quot; value=\&quot;&amp;lt;b&amp;gt;INTERNET &amp;amp; CLOUD SERVICES&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;330\&quot; width=\&quot;1000\&quot; x=\&quot;580\&quot; y=\&quot;20\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-2\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🌐 Cloudflare&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;CDN • WAF • DNS • SSL&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-3\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🔥 Firebase&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Authentication • Push&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;90\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-4\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;🛡️ Google reCAPTCHA&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;150\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-5\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📧 AWS SES&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Email Service&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;210\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-6\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🔐 VPN Tunnel&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Site-to-Site/Client&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;270\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=14;fillColor=#f8cecc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DMZ / EDGE LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;480\&quot; width=\&quot;1000\&quot; x=\&quot;1080\&quot; y=\&quot;450\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-8\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 1 (ACTIVE)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Load Balancer&amp;lt;br&amp;gt;VIP: 192.168.1.100&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-9\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=1;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 2 (STANDBY)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Load Balancer&amp;lt;br&amp;gt;Keepalived&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;130\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-10\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;shape=ellipse;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;\&quot; value=\&quot;&amp;lt;b&amp;gt;Virtual IP&amp;lt;br&amp;gt;192.168.1.100&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; width=\&quot;1000\&quot; y=\&quot;230\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-11\&quot; edge=\&quot;1\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;dashed=1;\&quot; value=\&quot;&amp;lt;b&amp;gt;FAILOVER&amp;lt;br&amp;gt;(if HAProxy1 down)&amp;lt;/b&amp;gt;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;250\&quot; y=\&quot;140\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;390\&quot; y=\&quot;140\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-12\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🚪 API Gateway&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;1 VM • Kong/Tyk/Nginx&amp;lt;br&amp;gt;Rate Limiting • Auth • Routing&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-13\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🔐 Bastion Host&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;1 VM • SSH Access Control&amp;lt;br&amp;gt;2FA • Audit Logging&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;380\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=14;fillColor=#d5e8d4;\&quot; value=\&quot;&amp;lt;b&amp;gt;APPLICATION LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;930\&quot; width=\&quot;750\&quot; x=\&quot;40\&quot; y=\&quot;940\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-15\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;🚀 Red Hat OpenShift Container Platform&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-16\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;👑 Master Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;3 VMs • Control Plane&amp;lt;br&amp;gt;API Server • etcd • Scheduler&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-17\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;⚙️ Worker Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;9 VMs • Application Runtime&amp;lt;br&amp;gt;Containerized Apps&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;150\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-18\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📊 Infrastructure Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Registry • Monitoring&amp;lt;br&amp;gt;Logging • Router&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;240\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-19\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;🔗 Middleware Services&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;330\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-20\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📨 ActiveMQ Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;3 VMs • Message Queue&amp;lt;br&amp;gt;Master-Slave Replication&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;360\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-21\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;⚡ Redis Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;3 VMs • In-Memory Cache&amp;lt;br&amp;gt;Sentinel • Sharding&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;450\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-22\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📈 ELK Stack&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;3 VMs • Logging &amp;amp; Analytics&amp;lt;br&amp;gt;Elastic • Logstash • Kibana&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;540\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-23\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;🔍 Monitoring &amp;amp; Alerting&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;630\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-24\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📊 Prometheus&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Metrics Collection&amp;lt;br&amp;gt;HAProxy, App, DB Metrics&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;660\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-25\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📈 Grafana&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Dashboard Visualization&amp;lt;br&amp;gt;Real-time Monitoring&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;750\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-26\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🚨 AlertManager&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;Alert Routing &amp;amp; Management&amp;lt;br&amp;gt;Email/Slack Notifications&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;840\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=14;fillColor=#dae8fc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DATA LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;420\&quot; width=\&quot;750\&quot; x=\&quot;1160\&quot; y=\&quot;1050\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-28\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;🗄️ Database Cluster&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-29\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;🐘 PostgreSQL Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;3 VMs • HA Database&amp;lt;br&amp;gt;Streaming Replication&amp;lt;br&amp;gt;Patroni • PgBouncer&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-30\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📊 PostgreSQL EM&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;1 VM • Monitoring&amp;lt;br&amp;gt;Performance Analytics&amp;lt;br&amp;gt;Alert Management&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;170\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-31\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;💾 Object Storage&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-32\&quot; parent=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;\&quot; value=\&quot;&amp;lt;font style=&amp;#39;font-size: 18px;&amp;#39;&amp;gt;&amp;lt;b&amp;gt;📦 MinIO Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font style=&amp;#39;&amp;#39;&amp;gt;4 VMs • Object Storage&amp;lt;br&amp;gt;Distributed • Erasure Coding&amp;lt;br&amp;gt;S3 Compatible&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;310\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-33\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-1\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-8\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1080\&quot; y=\&quot;350\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;690\&quot; y=\&quot;440\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-34\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-8\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=0.75;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-12\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;250\&quot; y=\&quot;490\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;530\&quot; y=\&quot;490\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-35\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-12\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;540\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;800\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-36\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;800\&quot; y=\&quot;1115\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;900\&quot; y=\&quot;1115\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-37\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-13\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-14\&quot; value=\&quot;SSH Access\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;890\&quot; y=\&quot;540\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;890\&quot; y=\&quot;800\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-38\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-13\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-27\&quot; value=\&quot;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;890\&quot; y=\&quot;540\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1225\&quot; y=\&quot;800\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-39\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-6\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-7\&quot; value=\&quot;VPN Tunnel\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1080\&quot; y=\&quot;330\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1080\&quot; y=\&quot;400\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-40\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-8\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;140\&quot; y=\&quot;540\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;1010\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-41\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#d6b656&amp;#39;&amp;gt;📝 Logs &amp;amp; Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;120\&quot; x=\&quot;200\&quot; y=\&quot;700\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-42\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-12\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;540\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;1010\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-43\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-29\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1010\&quot; y=\&quot;910\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;1010\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-44\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-24\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-25\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;140\&quot; y=\&quot;1195\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;390\&quot; y=\&quot;1195\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-45\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#b85450&amp;#39;&amp;gt;📊 Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;260\&quot; y=\&quot;1190\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-46\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;i0zRWkaTdQUn7pXkJ5LY-26\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#ff0000;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;\&quot; target=\&quot;i0zRWkaTdQUn7pXkJ5LY-30\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;640\&quot; y=\&quot;1195\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1190\&quot; y=\&quot;970\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-47\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#ff0000&amp;#39;&amp;gt;🚨 Alerts&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;900\&quot; y=\&quot;1080\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-48\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6e6;strokeColor=#ff0000;strokeWidth=2;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;405\&quot; width=\&quot;500\&quot; x=\&quot;1650\&quot; y=\&quot;15\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-49\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#ff0000&amp;#39;&amp;gt;🧯 FAILURE SCENARIO&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;500\&quot; x=\&quot;1650\&quot; y=\&quot;25\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-50\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;quot;font-size: 17px;&amp;quot;&amp;gt;🔥 Scenario: HAProxy 1 Failure&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;460\&quot; x=\&quot;1670\&quot; y=\&quot;65\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-51\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font style=&amp;quot;font-size: 17px;&amp;quot;&amp;gt;1. HAProxy 1 goes down (hardware/network issue)&amp;lt;br&amp;gt;2. Keepalived detects failure via health checks&amp;lt;br&amp;gt;3. Virtual IP (192.168.1.100) fails over to HAProxy 2&amp;lt;br&amp;gt;4. HAProxy 2 becomes ACTIVE, takes over traffic&amp;lt;br&amp;gt;5. AlertManager triggers alerts via email/Slack&amp;lt;br&amp;gt;6. Team investigates root cause&amp;lt;br&amp;gt;7. Logs analyzed via ELK Stack&amp;lt;br&amp;gt;8. HAProxy 1 repaired and returns as STANDBY&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;150\&quot; width=\&quot;460\&quot; x=\&quot;1670\&quot; y=\&quot;95\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-52\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font style=&amp;quot;font-size: 17px;&amp;quot;&amp;gt;📊 Key Metrics Monitored:&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;460\&quot; x=\&quot;1670\&quot; y=\&quot;255\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-53\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font style=&amp;quot;font-size: 17px;&amp;quot;&amp;gt;• HAProxy uptime &amp;amp;amp; health status&amp;lt;br&amp;gt;• Connection rate &amp;amp;amp; error rate&amp;lt;br&amp;gt;• Response time percentiles&amp;lt;br&amp;gt;• Queue length &amp;amp;amp; backend health&amp;lt;br&amp;gt;• Keepalived state transitions&amp;lt;br&amp;gt;• Network interface metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;460\&quot; x=\&quot;1680\&quot; y=\&quot;300\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-54\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;strokeWidth=2;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;350\&quot; width=\&quot;450\&quot; x=\&quot;50\&quot; y=\&quot;50\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-55\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;📋 ARCHITECTURE LEGEND&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;450\&quot; x=\&quot;50\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-56\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;LAYERS:&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;100\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-57\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;\&quot; value=\&quot;Internet &amp;amp; Cloud Services\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;125\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-58\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;\&quot; value=\&quot;DMZ / Edge Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;160\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-59\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;\&quot; value=\&quot;Application Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;195\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-60\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;\&quot; value=\&quot;Data Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;230\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-61\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;DATA FLOWS:&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-62\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#6c8ebf&amp;#39;&amp;gt;─────&amp;lt;/font&amp;gt; Application Traffic\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;305\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-63\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#d6b656&amp;#39;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Logging Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;325\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-64\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#b85450&amp;#39;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Monitoring Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;345\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-65\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;font color=&amp;#39;#ff0000&amp;#39;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Alert Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;70\&quot; y=\&quot;365\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-66\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;strokeWidth=2;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;150\&quot; width=\&quot;450\&quot; x=\&quot;50\&quot; y=\&quot;420\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-67\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;📊 INFRASTRUCTURE SUMMARY&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;450\&quot; x=\&quot;50\&quot; y=\&quot;430\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-68\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• Total VMs: 33\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;470\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-69\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• Database Nodes: 7\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;490\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-70\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• Compute Nodes: 15\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;510\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-71\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• Storage Nodes: 4\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;70\&quot; y=\&quot;530\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-72\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• External Services: 5\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;250\&quot; y=\&quot;470\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;i0zRWkaTdQUn7pXkJ5LY-73\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;• Monitoring Tools: 6\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;250\&quot; y=\&quot;490\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n      &lt;/root&gt;\n    &lt;/mxGraphModel&gt;\n  &lt;/diagram&gt;\n  &lt;diagram id=\&quot;B6SRn1sfuul3oYYYXaPt\&quot; name=\&quot;Hybrid\&quot;&gt;\n    &lt;mxGraphModel dx=\&quot;6060\&quot; dy=\&quot;3110\&quot; grid=\&quot;1\&quot; gridSize=\&quot;10\&quot; guides=\&quot;1\&quot; tooltips=\&quot;1\&quot; connect=\&quot;1\&quot; arrows=\&quot;1\&quot; fold=\&quot;1\&quot; page=\&quot;1\&quot; pageScale=\&quot;1\&quot; pageWidth=\&quot;850\&quot; pageHeight=\&quot;1100\&quot; math=\&quot;0\&quot; shadow=\&quot;0\&quot;&gt;\n      &lt;root&gt;\n        &lt;mxCell id=\&quot;0\&quot; /&gt;\n        &lt;mxCell id=\&quot;1\&quot; parent=\&quot;0\&quot; /&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-1\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#e1d5e7;\&quot; value=\&quot;&amp;lt;b&amp;gt;INTERNET &amp;amp; CLOUD SERVICES&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;210\&quot; width=\&quot;1000\&quot; x=\&quot;700\&quot; y=\&quot;435\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-3\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🔥 Firebase&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Authentication • Push&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-4\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🛡️ Google reCAPTCHA&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;90\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-5\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📧 AWS SES&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Email Service&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; y=\&quot;150\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#f8cecc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DMZ / EDGE LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;480\&quot; width=\&quot;1000\&quot; x=\&quot;580\&quot; y=\&quot;1390\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-8\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 1 (ACTIVE)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Load Balancer&amp;lt;br&amp;gt;VIP: 192.168.1.100&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-9\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=1;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 2 (STANDBY)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Load Balancer&amp;lt;br&amp;gt;Keepalived&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;130\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-10\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;shape=ellipse;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;Virtual IP&amp;lt;br&amp;gt;192.168.1.100&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; width=\&quot;1000\&quot; y=\&quot;230\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-11\&quot; edge=\&quot;1\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;dashed=1;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;FAILOVER&amp;lt;br&amp;gt;(if HAProxy1 down)&amp;lt;/b&amp;gt;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;250\&quot; y=\&quot;140\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;390\&quot; y=\&quot;140\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-12\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🚪 API Gateway&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • Kong/Tyk/Nginx&amp;lt;br&amp;gt;Rate Limiting • Auth • Routing&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-13\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🔐 Bastion Host&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • SSH Access Control&amp;lt;br&amp;gt;2FA • Audit Logging&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;380\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#d5e8d4;\&quot; value=\&quot;&amp;lt;b&amp;gt;APPLICATION LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;960\&quot; width=\&quot;750\&quot; x=\&quot;260\&quot; y=\&quot;2100\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-15\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🚀 Red Hat OpenShift Container Platform&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-16\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;👑 Master Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Control Plane&amp;lt;br&amp;gt;API Server • etcd • Scheduler&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-17\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚙️ Worker Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;9 VMs • Application Runtime&amp;lt;br&amp;gt;Containerized Apps&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;150\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-18\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 Infrastructure Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Registry • Monitoring&amp;lt;br&amp;gt;Logging • Router&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;240\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-19\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🔗 Middleware Services&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;330\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-20\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📨 ActiveMQ Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Message Queue&amp;lt;br&amp;gt;Master-Slave Replication&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;360\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-21\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚡ Redis Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • In-Memory Cache&amp;lt;br&amp;gt;Sentinel • Sharding&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;450\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-41\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#d6b656&amp;quot;&amp;gt;📝 Logs &amp;amp;amp; Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;540\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-22\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📈 ELK Stack&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Logging &amp;amp;amp; Analytics&amp;lt;br&amp;gt;Elastic • Logstash • Kibana&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;570\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-23\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🔍 Monitoring &amp;amp;amp; Alerting&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;660\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-24\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 Prometheus&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Metrics Collection&amp;lt;br&amp;gt;HAProxy, App, DB Metrics&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;690\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-25\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📈 Grafana&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Dashboard Visualization&amp;lt;br&amp;gt;Real-time Monitoring&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;780\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-26\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🚨 AlertManager&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Alert Routing &amp;amp;amp; Management&amp;lt;br&amp;gt;Email/Slack Notifications&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;870\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#dae8fc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DATA LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;420\&quot; width=\&quot;750\&quot; x=\&quot;1160\&quot; y=\&quot;2100\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-28\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;🗄️ Database Cluster&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-29\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🐘 PostgreSQL Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • HA Database&amp;lt;br&amp;gt;Streaming Replication&amp;lt;br&amp;gt;Patroni • PgBouncer&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-30\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 PostgreSQL EM&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • Monitoring&amp;lt;br&amp;gt;Performance Analytics&amp;lt;br&amp;gt;Alert Management&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;170\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-31\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;💾 Object Storage&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-32\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📦 MinIO Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;4 VMs • Object Storage&amp;lt;br&amp;gt;Distributed • Erasure Coding&amp;lt;br&amp;gt;S3 Compatible&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;310\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-33\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-152\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#6c8ebf;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.465;exitY=1.108;exitDx=0;exitDy=0;exitPerimeter=0;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-8\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1520\&quot; y=\&quot;840\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;700\&quot; y=\&quot;575\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-34\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-8\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=0.75;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-12\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;-250\&quot; y=\&quot;1430\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;30\&quot; y=\&quot;1430\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-35\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-12\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-36\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;810\&quot; y=\&quot;1250\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;910\&quot; y=\&quot;1250\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-37\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-13\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-14\&quot; value=\&quot;SSH Access\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;900\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;900\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-38\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-13\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-27\&quot; value=\&quot;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;900\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1235\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-39\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-6\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-7\&quot; value=\&quot;VPN Tunnel\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; x=\&quot;-0.3637\&quot; y=\&quot;-22\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint y=\&quot;-1\&quot; as=\&quot;offset\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1090\&quot; y=\&quot;465\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1090\&quot; y=\&quot;535\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-40\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-8\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;150\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-42\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-12\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-43\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-29\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-22\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1020\&quot; y=\&quot;1045\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-44\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-24\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-25\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;360\&quot; y=\&quot;2355\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;610\&quot; y=\&quot;2355\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-45\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#b85450&amp;quot;&amp;gt;📊 Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;480\&quot; y=\&quot;2350\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-46\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-26\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#ff0000;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-30\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;650\&quot; y=\&quot;1330\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1200\&quot; y=\&quot;1105\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-47\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#ff0000&amp;quot;&amp;gt;🚨 Alerts&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;1010\&quot; y=\&quot;2355\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-54\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;strokeWidth=2;fontSize=18;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;350\&quot; width=\&quot;450\&quot; x=\&quot;20\&quot; y=\&quot;15\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-55\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;📋 ARCHITECTURE LEGEND&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;450\&quot; x=\&quot;20\&quot; y=\&quot;25\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-56\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;LAYERS:&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;65\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-57\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;\&quot; value=\&quot;Internet &amp;amp;amp; Cloud Services\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;90\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-58\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;DMZ / Edge Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;125\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-59\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;\&quot; value=\&quot;Application Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;160\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-60\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;Data Layer\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;195\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-61\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;DATA FLOWS:&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;245\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-62\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#6c8ebf&amp;quot;&amp;gt;─────&amp;lt;/font&amp;gt; Application Traffic\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;270\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-63\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#d6b656&amp;quot;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Logging Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;290\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-64\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#b85450&amp;quot;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Monitoring Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;310\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-65\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#ff0000&amp;quot;&amp;gt;-- -- --&amp;lt;/font&amp;gt; Alert Flow\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;270\&quot; x=\&quot;40\&quot; y=\&quot;330\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-66\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;strokeWidth=2;fontSize=18;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;150\&quot; width=\&quot;450\&quot; x=\&quot;20\&quot; y=\&quot;385\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-67\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\&quot; value=\&quot;&amp;lt;b&amp;gt;📊 INFRASTRUCTURE SUMMARY&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;450\&quot; x=\&quot;20\&quot; y=\&quot;395\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-68\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• Total VMs: 33\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;435\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-69\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• Database Nodes: 7\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;455\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-70\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• Compute Nodes: 15\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;475\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-71\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• Storage Nodes: 4\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;40\&quot; y=\&quot;495\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-72\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• External Services: 5\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;220\&quot; y=\&quot;435\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-73\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;• Monitoring Tools: 6\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;20\&quot; width=\&quot;200\&quot; x=\&quot;220\&quot; y=\&quot;455\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#f8cecc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DMZ / EDGE LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;480\&quot; width=\&quot;1000\&quot; x=\&quot;2770\&quot; y=\&quot;1390\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-109\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 1 (ACTIVE)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Load Balancer&amp;lt;br&amp;gt;VIP: 192.168.1.100&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-110\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=1;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚖️ HAProxy 2 (STANDBY)&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Load Balancer&amp;lt;br&amp;gt;Keepalived&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;130\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-111\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;shape=ellipse;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;Virtual IP&amp;lt;br&amp;gt;192.168.1.100&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; width=\&quot;1000\&quot; y=\&quot;230\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-112\&quot; edge=\&quot;1\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff0000;dashed=1;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;FAILOVER&amp;lt;br&amp;gt;(if HAProxy1 down)&amp;lt;/b&amp;gt;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;250\&quot; y=\&quot;140\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;390\&quot; y=\&quot;140\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-113\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🚪 API Gateway&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • Kong/Tyk/Nginx&amp;lt;br&amp;gt;Rate Limiting • Auth • Routing&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-114\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🔐 Bastion Host&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • SSH Access Control&amp;lt;br&amp;gt;2FA • Audit Logging&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;100\&quot; width=\&quot;1000\&quot; y=\&quot;380\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#d5e8d4;\&quot; value=\&quot;&amp;lt;b&amp;gt;APPLICATION LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;960\&quot; width=\&quot;750\&quot; x=\&quot;2450\&quot; y=\&quot;2100\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-116\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🚀 Red Hat OpenShift Container Platform&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-117\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;👑 Master Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Control Plane&amp;lt;br&amp;gt;API Server • etcd • Scheduler&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-118\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚙️ Worker Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;9 VMs • Application Runtime&amp;lt;br&amp;gt;Containerized Apps&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;150\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-119\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 Infrastructure Nodes&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Registry • Monitoring&amp;lt;br&amp;gt;Logging • Router&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;240\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-120\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🔗 Middleware Services&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;330\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-121\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📨 ActiveMQ Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Message Queue&amp;lt;br&amp;gt;Master-Slave Replication&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;360\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-122\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;⚡ Redis Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • In-Memory Cache&amp;lt;br&amp;gt;Sentinel • Sharding&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;450\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-123\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#d6b656&amp;quot;&amp;gt;📝 Logs &amp;amp;amp; Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;540\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-124\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📈 ELK Stack&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • Logging &amp;amp;amp; Analytics&amp;lt;br&amp;gt;Elastic • Logstash • Kibana&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;570\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-125\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;&amp;lt;font&amp;gt;🔍 Monitoring &amp;amp;amp; Alerting&amp;lt;/font&amp;gt;&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;660\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-126\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 Prometheus&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Metrics Collection&amp;lt;br&amp;gt;HAProxy, App, DB Metrics&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;690\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-127\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📈 Grafana&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Dashboard Visualization&amp;lt;br&amp;gt;Real-time Monitoring&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;780\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-128\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🚨 AlertManager&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Alert Routing &amp;amp;amp; Management&amp;lt;br&amp;gt;Email/Slack Notifications&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;90\&quot; width=\&quot;750\&quot; y=\&quot;870\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; parent=\&quot;1\&quot; style=\&quot;swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;fontSize=18;fillColor=#dae8fc;\&quot; value=\&quot;&amp;lt;b&amp;gt;DATA LAYER&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;420\&quot; width=\&quot;750\&quot; x=\&quot;3350\&quot; y=\&quot;2100\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-130\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;🗄️ Database Cluster&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;30\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-131\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🐘 PostgreSQL Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;3 VMs • HA Database&amp;lt;br&amp;gt;Streaming Replication&amp;lt;br&amp;gt;Patroni • PgBouncer&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;60\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-132\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📊 PostgreSQL EM&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;1 VM • Monitoring&amp;lt;br&amp;gt;Performance Analytics&amp;lt;br&amp;gt;Alert Management&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;170\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-133\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;b&amp;gt;💾 Object Storage&amp;lt;/b&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;750\&quot; y=\&quot;280\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-134\&quot; parent=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;📦 MinIO Cluster&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;4 VMs • Object Storage&amp;lt;br&amp;gt;Distributed • Erasure Coding&amp;lt;br&amp;gt;S3 Compatible&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;110\&quot; width=\&quot;750\&quot; y=\&quot;310\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-135\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-109\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=0.75;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-113\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1940\&quot; y=\&quot;1430\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2220\&quot; y=\&quot;1430\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-136\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-113\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-137\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;3000\&quot; y=\&quot;1250\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;3100\&quot; y=\&quot;1250\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-138\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-114\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-115\&quot; value=\&quot;SSH Access\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;3090\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;3090\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-139\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-114\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; value=\&quot;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;3090\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;3425\&quot; y=\&quot;935\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-140\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-109\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-124\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2340\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-141\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-113\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-124\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;675\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-142\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-131\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-124\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;3210\&quot; y=\&quot;1045\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;1145\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-143\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-126\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-127\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2550\&quot; y=\&quot;2355\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2800\&quot; y=\&quot;2355\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-144\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#b85450&amp;quot;&amp;gt;📊 Metrics&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;2670\&quot; y=\&quot;2350\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-145\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-128\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#ff0000;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-132\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2840\&quot; y=\&quot;1330\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;3390\&quot; y=\&quot;1105\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-146\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font color=&amp;quot;#ff0000&amp;quot;&amp;gt;🚨 Alerts&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;80\&quot; x=\&quot;3200\&quot; y=\&quot;2355\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-147\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=light-dark(#f00000, #ededed);fontSize=18;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;2110\&quot; width=\&quot;2310\&quot; x=\&quot;-110\&quot; y=\&quot;1170\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-6\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🔐 VPN Tunnel&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;Site-to-Site/Client&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; x=\&quot;700\&quot; y=\&quot;750\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-180\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-2\&quot; style=\&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-3\&quot;&gt;\n          &lt;mxGeometry relative=\&quot;1\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-2\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;&amp;lt;b&amp;gt;🌐 Cloudflare&amp;lt;/b&amp;gt;&amp;lt;br&amp;gt;&amp;lt;font&amp;gt;CDN • WAF • DNS • SSL&amp;lt;/font&amp;gt;&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;1000\&quot; x=\&quot;1920\&quot; y=\&quot;450\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-152\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;\&quot; value=\&quot;&amp;lt;h2 style=&amp;quot;font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-size-adjust: none; font-language-override: normal; font-kerning: auto; font-optical-sizing: auto; font-feature-settings: normal; font-variation-settings: normal; font-variant-position: normal; font-variant-emoji: normal; font-stretch: normal; line-height: 32px; font-family: quote-cjk-patch, Inter, system-ui, -apple-system, BlinkMacSystemFont, &amp;amp;quot;Segoe UI&amp;amp;quot;, Roboto, Oxygen, Ubuntu, Cantarell, &amp;amp;quot;Open Sans&amp;amp;quot;, &amp;amp;quot;Helvetica Neue&amp;amp;quot;, sans-serif; margin: 32px 0px 16px; color: rgb(249, 250, 251); text-align: start; background-color: rgb(21, 21, 23);&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot;font-weight: inherit;&amp;quot;&amp;gt;&amp;amp;nbsp;(GSLB) Global Server Load Balancing&amp;lt;/span&amp;gt;&amp;lt;/h2&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;80\&quot; width=\&quot;1000\&quot; x=\&quot;1940\&quot; y=\&quot;640\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-154\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-152\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.459;exitY=1.006;exitDx=0;exitDy=0;exitPerimeter=0;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2910\&quot; y=\&quot;950\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;3225.333333333334\&quot; y=\&quot;1390\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-158\&quot; parent=\&quot;1\&quot; style=\&quot;shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=18;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;120\&quot; x=\&quot;2210\&quot; y=\&quot;1790\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-159\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;Direct Connect&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;85\&quot; width=\&quot;80\&quot; x=\&quot;2230\&quot; y=\&quot;1777\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-165\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; style=\&quot;endArrow=classic;startArrow=classic;html=1;rounded=0;fontSize=18;\&quot; value=\&quot;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1915\&quot; y=\&quot;2180\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2270\&quot; y=\&quot;1850\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-168\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-129\&quot; style=\&quot;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.313;exitY=0.001;exitDx=0;exitDy=0;exitPerimeter=0;fontSize=18;\&quot; value=\&quot;\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2260\&quot; y=\&quot;1440\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2270\&quot; y=\&quot;1850\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-172\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; style=\&quot;endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.183;entryY=-0.011;entryDx=0;entryDy=0;entryPerimeter=0;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-108\&quot; value=\&quot;VPN Tunnel\&quot;&gt;\n          &lt;mxGeometry height=\&quot;50\&quot; relative=\&quot;1\&quot; width=\&quot;50\&quot; x=\&quot;-0.3637\&quot; y=\&quot;-22\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint y=\&quot;-1\&quot; as=\&quot;offset\&quot; /&gt;\n            &lt;mxPoint x=\&quot;1300\&quot; y=\&quot;810\&quot; as=\&quot;sourcePoint\&quot; /&gt;\n            &lt;mxPoint x=\&quot;2340\&quot; y=\&quot;1480.4328018223237\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-173\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=light-dark(#f00000, #ededed);\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;2110\&quot; width=\&quot;2310\&quot; x=\&quot;2373\&quot; y=\&quot;1172\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-178\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-174\&quot; style=\&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;fontSize=18;\&quot;&gt;\n          &lt;mxGeometry relative=\&quot;1\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;1910\&quot; y=\&quot;140\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-174\&quot; parent=\&quot;1\&quot; style=\&quot;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=18;\&quot; value=\&quot;Actor\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;30\&quot; x=\&quot;1790\&quot; y=\&quot;110\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-175\&quot; parent=\&quot;1\&quot; style=\&quot;rounded=1;whiteSpace=wrap;html=1;fontSize=18;\&quot; value=\&quot;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;60\&quot; width=\&quot;550\&quot; x=\&quot;1920\&quot; y=\&quot;110\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-176\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=18;\&quot; value=\&quot;Text\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;60\&quot; x=\&quot;1940\&quot; y=\&quot;600\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-179\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-177\&quot; style=\&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontSize=18;\&quot;&gt;\n          &lt;mxGeometry relative=\&quot;1\&quot; as=\&quot;geometry\&quot;&gt;\n            &lt;mxPoint x=\&quot;2450\&quot; y=\&quot;440\&quot; as=\&quot;targetPoint\&quot; /&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-177\&quot; parent=\&quot;1\&quot; style=\&quot;text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=18;\&quot; value=\&quot;&amp;lt;font&amp;gt;Mobile Apps&amp;amp;nbsp; atau Web&amp;lt;/font&amp;gt;\&quot; vertex=\&quot;1\&quot;&gt;\n          &lt;mxGeometry height=\&quot;30\&quot; width=\&quot;360\&quot; x=\&quot;2020\&quot; y=\&quot;130\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\&quot;zWioZsOe6VCpKhBoVPJB-181\&quot; edge=\&quot;1\&quot; parent=\&quot;1\&quot; source=\&quot;zWioZsOe6VCpKhBoVPJB-2\&quot; style=\&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.479;entryY=0.142;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=18;\&quot; target=\&quot;zWioZsOe6VCpKhBoVPJB-152\&quot;&gt;\n          &lt;mxGeometry relative=\&quot;1\&quot; as=\&quot;geometry\&quot; /&gt;\n        &lt;/mxCell&gt;\n      &lt;/root&gt;\n    &lt;/mxGraphModel&gt;\n  &lt;/diagram&gt;\n&lt;/mxfile&gt;\n&quot;}"></div>
+<script type="text/javascript" src="https://viewer.diagrams.net/js/viewer-static.min.js"></script>
+
+                        </div>
+                        
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                            Diagram interaktif: Zoom dengan scroll mouse, navigasi dengan klik-tarik, klik ganda untuk detail.
+                        </p>
+                    </div>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Komponen Kunci</h3>
+                    <ul>
+                        <li><strong>Database Layer:</strong> PostgreSQL Cluster dengan 3-node streaming replication</li>
+                        <li><strong>Compute Layer:</strong> Kubernetes/OpenShift dengan 3 master nodes dan 9 worker nodes</li>
+                        <li><strong>Storage Layer:</strong> MinIO dengan erasure coding untuk data durability</li>
+                        <li><strong>Messaging & Caching:</strong> ActiveMQ dan Redis Cluster untuk komunikasi dan caching</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Strategi Fault-Tolerance -->
+            <div class="slide" id="slide5">
+                <div class="slide-header">
+                    <h2><i class="fas fa-shield-alt"></i> Strategi Fault-Tolerance per Layer</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color);">Application Layer (OpenShift/Kubernetes)</h3>
+                    <ul>
+                        <li><strong>Control Plane High Availability:</strong> 3 master nodes dengan Raft consensus protocol</li>
+                        <li><strong>Worker Node Redundancy:</strong> 9 worker nodes dengan pod anti-affinity rules</li>
+                        <li><strong>Horizontal Pod Autoscaler:</strong> Scale berdasarkan CPU (70%) atau custom metrics</li>
+                        <li><strong>Self-healing:</strong> Pod restart otomatis, node replacement</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Database Layer (PostgreSQL Cluster)</h3>
+                    <ul>
+                        <li><strong>Streaming Replication:</strong> Primary → 2 standby dengan synchronous replication</li>
+                        <li><strong>Automatic Failover:</strong> Menggunakan Pgpool-II untuk monitoring dan promotion</li>
+                        <li><strong>Connection Pooling:</strong> PgBouncer untuk mengurangi overhead connection</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Storage Layer (MinIO)</h3>
+                    <ul>
+                        <li><strong>Erasure Coding:</strong> 4 nodes dengan erasure coding (2 data + 2 parity) → toleransi 2 node failure</li>
+                        <li><strong>Strong Consistency:</strong> Read-after-write consistency untuk semua operasi</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Skenario Kegagalan dan Recovery Strategy</h3>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Skenario Kegagalan</th>
+                                <th>Metode Deteksi</th>
+                                <th>Prosedur Recovery</th>
+                                <th>Estimasi RTO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Single App Node Crash</td>
+                                <td>Liveness probe (5s interval)</td>
+                                <td>Pod restart, traffic reroute</td>
+                                <td>30-60 detik</td>
+                            </tr>
+                            <tr>
+                                <td>Database Primary Failure</td>
+                                <td>Patroni health check (10s)</td>
+                                <td>Promote standby to primary</td>
+                                <td>60-90 detik</td>
+                            </tr>
+                            <tr>
+                                <td>Complete AZ Outage</td>
+                                <td>Global LB health check (30s)</td>
+                                <td>Redirect traffic to other AZs</td>
+                                <td>2-5 menit</td>
+                            </tr>
+                            <tr>
+                                <td>Network Partition</td>
+                                <td>Consensus heartbeat timeout</td>
+                                <td>Quorum-based decision making</td>
+                                <td>1-3 menit</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Analisis Performa & Scalability -->
+            <div class="slide" id="slide6">
+                <div class="slide-header">
+                    <h2><i class="fas fa-chart-line"></i> BAB 4: Analisis Performa & Scalability</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color);">Analisis Availability per Komponen</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Komponen</th>
+                                <th>Nodes</th>
+                                <th>Toleransi Kegagalan</th>
+                                <th>Availability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Database Cluster</td>
+                                <td>3</td>
+                                <td>1 node (33%)</td>
+                                <td>99.95%</td>
+                            </tr>
+                            <tr>
+                                <td>Control Plane</td>
+                                <td>3</td>
+                                <td>1 node (33%)</td>
+                                <td>99.99%</td>
+                            </tr>
+                            <tr>
+                                <td>Application Layer</td>
+                                <td>9</td>
+                                <td>3 nodes (33%)</td>
+                                <td>99.9%</td>
+                            </tr>
+                            <tr>
+                                <td>Storage</td>
+                                <td>4</td>
+                                <td>2 nodes (50%)</td>
+                                <td>99.999999999%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Overall System</strong></td>
+                                <td><strong>-</strong></td>
+                                <td><strong>33% node failure</strong></td>
+                                <td><strong>99.99% SLA</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="highlight">
+                        <p><strong>Overall System Availability:</strong> 99.99% SLA ≈ 52 menit downtime/tahun</p>
+                    </div>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Scalability Analysis</h3>
+                    <ul>
+                        <li><strong>Throughput:</strong> 5,000 requests per minute (RPM)</li>
+                        <li><strong>Database:</strong> 2,000 transactions per second (TPS)</li>
+                        <li><strong>Concurrent Users:</strong> 10,000+ users</li>
+                        <li><strong>Data Storage:</strong> 10+ TB dengan expansion capability</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Identifikasi Bottleneck</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bottleneck</th>
+                                <th>Dampak</th>
+                                <th>Strategi Mitigasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Database Write Scaling</td>
+                                <td>Single primary bottleneck</td>
+                                <td>Implement sharding by transaction ID range</td>
+                            </tr>
+                            <tr>
+                                <td>Inter-AZ Latency</td>
+                                <td>Sync replication delay</td>
+                                <td>Use semi-sync replication with quorum writes</td>
+                            </tr>
+                            <tr>
+                                <td>Storage I/O Contention</td>
+                                <td>High latency under load</td>
+                                <td>Implement SSD caching layer</td>
+                            </tr>
+                            <tr>
+                                <td>Consensus Overhead</td>
+                                <td>Election time during failover</td>
+                                <td>Optimize heartbeat intervals and timeout values</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Kesimpulan & Rekomendasi -->
+            <div class="slide" id="slide7">
+                <div class="slide-header">
+                    <h2><i class="fas fa-check-circle"></i> BAB 5: Kesimpulan & Rekomendasi</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color);">Kesimpulan</h3>
+                    <p>Desain sistem fault-tolerant untuk platform transaksi finansial telah memenuhi semua requirement dengan:</p>
+                    <ol>
+                        <li><strong>High Availability:</strong> Mencapai target SLA 99.99% melalui arsitektur active-active</li>
+                        <li><strong>Fault Tolerance:</strong> Bertahan dari kegagalan hingga 33% node tanpa service disruption</li>
+                        <li><strong>Automated Recovery:</strong> RTO &lt; 2 menit untuk sebagian besar failure scenarios</li>
+                        <li><strong>Data Protection:</strong> RPO = 0 dengan synchronous replication dan backup strategies</li>
+                    </ol>
+                    
+                    <div class="highlight">
+                        <p>Sistem ini merupakan contoh implementasi komputasi terdistribusi yang matang dengan pertimbangan careful trade-off antara availability, consistency, dan cost.</p>
+                    </div>
+                    
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Rekomendasi Implementasi</h3>
+                    <div class="recommendation-card">
+                        <h4>Prioritas 1 (Segera):</h4>
+                        <ul>
+                            <li>Implement chaos engineering testing framework</li>
+                            <li>Setup comprehensive monitoring dengan AIOps capabilities</li>
+                            <li>Document detailed runbooks untuk setiap failure scenario</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <h4>Prioritas 2 (3-6 bulan):</h4>
+                        <ul>
+                            <li>Implement database sharding untuk write scaling</li>
+                            <li>Adopt service mesh untuk advanced traffic management</li>
+                            <li>Setup multi-region disaster recovery</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <h4>Prioritas 3 (12 bulan):</h4>
+                        <ul>
+                            <li>Implement machine learning untuk predictive failure detection</li>
+                            <li>Adopt GitOps untuk infrastructure automation</li>
+                            <li>Consider hybrid multi-cloud strategy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Daftar Pustaka -->
+            <div class="slide" id="slide8">
+                <div class="slide-header">
+                    <h2><i class="fas fa-book"></i> Daftar Pustaka</h2>
+                </div>
+                <div class="slide-content">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Referensi Utama</h3>
+                    <ol class="reference-list">
+                        <li>Kleppmann, M. (2017). <em>Designing Data-Intensive Applications</em>. O'Reilly Media.</li>
+                        <li>AWS Well-Architected Framework. (2024). <em>Reliability Pillar Whitepaper</em></li>
+                        <li>Kubernetes Documentation. (2024). <em>Production-Grade Cluster Management</em></li>
+                        <li>Nygard, M. T. (2018). <em>Release It! Design and Deploy Production-Ready Software</em>. Pragmatic Bookshelf.</li>
+                        <li>PostgreSQL Global Development Group. (2024). <em>High Availability, Load Balancing, and Replication</em></li>
+                        <li>Tanenbaum, A. S., & Van Steen, M. (2017). <em>Distributed Systems: Principles and Paradigms</em>. Pearson.</li>
+                        <li>Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). <em>Distributed Systems: Concepts and Design</em>. Addison-Wesley.</li>
+                        <li>Google. (2024). <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly Media.</li>
+                    </ol>
+                    
+                    <div class="highlight" style="margin-top: 30px;">
+                        <h4 style="color: var(--primary-color);">Best Practices yang Disarankan:</h4>
+                        <ul>
+                            <li><strong>Regular Testing:</strong> Conduct quarterly disaster recovery drills</li>
+                            <li><strong>Documentation:</strong> Maintain updated runbooks and architecture diagrams</li>
+                            <li><strong>Training:</strong> Continuous skill development untuk operations team</li>
+                            <li><strong>Monitoring:</strong> Implement SLO-based alerting daripada traditional threshold</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h3 style="color: var(--primary-color);">Terima Kasih</h3>
+                        <p>Presentasi ini disusun sebagai bagian dari tugas mata kuliah Paralel and Distributed Computer</p>
+                        <p><strong>Dimas Kurniawan - 25120300016</strong></p>
+                        <p>Ilmu Komputer - 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="slide-nav">
+                <button class="btn" id="prevBtn" disabled>
+                    <i class="fas fa-chevron-left"></i> Sebelumnya
+                </button>
+                <button class="btn" id="nextBtn">
+                    Selanjutnya <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="slide-title" id="slideTitle">
+                Halaman Judul
+            </div>
+            
+            <div class="slide-indicator">
+                <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+            
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentSlideElement = document.getElementById('currentSlide');
+            const totalSlidesElement = document.getElementById('totalSlides');
+            const slideTitleElement = document.getElementById('slideTitle');
+            const progressBar = document.getElementById('progressBar');
+            
+            totalSlidesElement.textContent = totalSlides;
+            
+            function updateSlide() {
+                // Sembunyikan semua slide
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                // Tampilkan slide aktif
+                slides[currentSlide].classList.add('active');
+                
+                // Update tombol navigasi
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                
+                // Update indikator
+                currentSlideElement.textContent = currentSlide + 1;
+                
+                // Update judul slide
+                const slideHeader = slides[currentSlide].querySelector('.slide-header h2');
+                slideTitleElement.textContent = slideHeader ? slideHeader.textContent.replace(/^\s*[^\s]+\s+/, '') : 'Slide ' + (currentSlide + 1);
+                
+                // Update progress bar
+                const progress = ((currentSlide + 1) / totalSlides) * 100;
+                progressBar.style.width = progress + '%';
+                
+                // Scroll ke atas slide
+                slides[currentSlide].scrollTop = 0;
+            }
+            
+            // Event listeners untuk tombol navigasi
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+            
+            // Navigasi dengan keyboard
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        updateSlide();
+                    }
+                } else if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                    if (currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        updateSlide();
+                    }
+                } else if (e.key === 'Home') {
+                    currentSlide = 0;
+                    updateSlide();
+                } else if (e.key === 'End') {
+                    currentSlide = totalSlides - 1;
+                    updateSlide();
+                }
+            });
+            
+            // Navigasi dengan swipe pada perangkat touch
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.querySelector('.slides-container').addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.querySelector('.slides-container').addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const difference = touchStartX - touchEndX;
+                
+                if (Math.abs(difference) > swipeThreshold) {
+                    if (difference > 0) {
+                        // Swipe kiri - next slide
+                        if (currentSlide < totalSlides - 1) {
+                            currentSlide++;
+                            updateSlide();
+                        }
+                    } else {
+                        // Swipe kanan - previous slide
+                        if (currentSlide > 0) {
+                            currentSlide--;
+                            updateSlide();
+                        }
+                    }
+                }
+            }
+            
+            // Inisialisasi slide pertama
+            updateSlide();
+        });
+    </script>
+</body>
+</html>
