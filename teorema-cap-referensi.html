@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teorema CAP: Trade-off Fundamental dalam Sistem Terdistribusi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide-header {
+            background: linear-gradient(to right, #1a237e, #283593);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .slide-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slide-header h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        
+        .header-accent {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 5rem;
+            opacity: 0.1;
+            color: white;
+        }
+        
+        .journal-reference {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            border-left: 4px solid #bbdefb;
+        }
+        
+        .journal-reference p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .journal-link {
+            color: #bbdefb;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .journal-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .slide-content {
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .cap-intro {
+            background-color: #f5f7ff;
+            border-radius: 15px;
+            padding: 25px 30px;
+            border-left: 5px solid #3949ab;
+        }
+        
+        .intro-title {
+            color: #1a237e;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .intro-title i {
+            font-size: 1.8rem;
+            background-color: #e8eaf6;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .intro-text {
+            line-height: 1.7;
+            font-size: 1.15rem;
+            color: #444;
+        }
+        
+        .highlight {
+            background-color: #e3f2fd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        .cap-triangle {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .triangle-container {
+            width: 400px;
+            height: 350px;
+            position: relative;
+        }
+        
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-bottom: 346px solid #f5f5f5;
+            position: relative;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 120px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .corner.c {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffebee;
+            color: #c62828;
+            border: 2px solid #ffcdd2;
+        }
+        
+        .corner.a {
+            bottom: 30px;
+            left: 30px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #c8e6c9;
+        }
+        
+        .corner.p {
+            bottom: 30px;
+            right: 30px;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 2px solid #bbdefb;
+        }
+        
+        .corner-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .triangle-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid #1a237e;
+        }
+        
+        .center-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a237e;
+            text-align: center;
+        }
+        
+        .center-subtext {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .cap-explanation {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .cap-box {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid;
+            transition: transform 0.3s ease;
+        }
+        
+        .cap-box:hover {
+            transform: translateY(-8px);
+        }
+        
+        .cap-box.c-box {
+            border-top-color: #c62828;
+        }
+        
+        .cap-box.a-box {
+            border-top-color: #2e7d32;
+        }
+        
+        .cap-box.p-box {
+            border-top-color: #1565c0;
+        }
+        
+        .cap-box-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cap-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .c-icon {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .a-icon {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .p-icon {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .cap-box-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .c-title {
+            color: #c62828;
+        }
+        
+        .a-title {
+            color: #2e7d32;
+        }
+        
+        .p-title {
+            color: #1565c0;
+        }
+        
+        .cap-box-content {
+            line-height: 1.6;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .tradeoff-section {
+            background-color: #fffde7;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            border-left: 5px solid #f9a825;
+        }
+        
+        .tradeoff-title {
+            color: #f57f17;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tradeoff-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        
+        .tradeoff-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tradeoff-box-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .tradeoff-box.cp {
+            border-top: 4px solid #5c6bc0;
+        }
+        
+        .tradeoff-box.ap {
+            border-top: 4px solid #66bb6a;
+        }
+        
+        .tradeoff-box.ca {
+            border-top: 4px solid #ef5350;
+        }
+        
+        .implementation-example {
+            background-color: #f3e5f5;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            border-left: 5px solid #8e24aa;
+        }
+        
+        .example-title {
+            color: #8e24aa;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .example-content {
+            line-height: 1.7;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        
+        .example-highlight {
+            background-color: #e1bee7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #8e24aa;
+        }
+        
+        .reference-section {
+            background-color: #e8f5e9;
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-top: 10px;
+            border-left: 5px solid #2e7d32;
+        }
+        
+        .reference-title {
+            color: #1b5e20;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .reference-content {
+            line-height: 1.6;
+            color: #2e7d32;
+        }
+        
+        .reference-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .reference-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2e7d32;
+            font-size: 1.5rem;
+        }
+        
+        .reference-link {
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .reference-link:hover {
+            color: #0d5302;
+            text-decoration: underline;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+            font-size: 0.95rem;
+        }
+        
+        @media (max-width: 992px) {
+            .cap-explanation {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .triangle-container {
+                width: 350px;
+                height: 300px;
+            }
+            
+            .triangle {
+                border-left: 175px solid transparent;
+                border-right: 175px solid transparent;
+                border-bottom: 303px solid #f5f5f5;
+            }
+            
+            .tradeoff-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .slide-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .slide-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .slide-content {
+                padding: 25px;
+            }
+            
+            .triangle-container {
+                width: 300px;
+                height: 260px;
+            }
+            
+            .triangle {
+                border-left: 150px solid transparent;
+                border-right: 150px solid transparent;
+                border-bottom: 260px solid #f5f5f5;
+            }
+            
+            .corner {
+                width: 100px;
+                padding: 10px;
+                font-size: 1rem;
+            }
+            
+            .center-text {
+                font-size: 1.4rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .slide-header {
+                padding: 20px;
+            }
+            
+            .slide-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header-accent {
+                display: none;
+            }
+            
+            .triangle-container {
+                width: 250px;
+                height: 220px;
+            }
+            
+            .triangle {
+                border-left: 125px solid transparent;
+                border-right: 125px solid transparent;
+                border-bottom: 216px solid #f5f5f5;
+            }
+            
+            .corner {
+                width: 80px;
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .center-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-header">
+            <div class="header-content">
+                <h1>Teorema CAP</h1>
+                <h2>Trade-off Fundamental dalam Sistem Terdistribusi dan Desain Fault-Tolerant</h2>
+                
+                <div class="journal-reference">
+                    <p><strong>Referensi Akademis:</strong> Teorema CAP pertama kali diperkenalkan oleh Eric Brewer dalam keynote speech di Symposium on Principles of Distributed Computing (PODC) tahun 2000, kemudian dipublikasikan secara formal pada tahun 2002.</p>
+                    <a href="https://people.eecs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf" target="_blank" class="journal-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        Brewer, E. A. (2000). Towards robust distributed systems. PODC Keynote Speech.
+                    </a>
+                </div>
+            </div>
+            <div class="header-accent">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+        </div>
+        
+        <div class="slide-content">
+            <div class="cap-intro">
+                <div class="intro-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Memahami Dilema Desain Sistem Terdistribusi</h3>
+                </div>
+                <div class="intro-text">
+                    <p>Teorema CAP, yang diperkenalkan oleh Eric Brewer pada tahun 2000, menyatakan bahwa <span class="highlight">sistem terdistribusi tidak dapat secara bersamaan menjamin ketiga properti ini</span>: Consistency (C), Availability (A), dan Partition Tolerance (P).</p>
+                    <p>Dalam jaringan yang tidak sempurna (di mana partisi jaringan dapat terjadi), sistem hanya dapat memilih dua dari tiga properti tersebut. Pemahaman tentang trade-off ini sangat penting dalam merancang sistem fault-tolerant yang efektif.</p>
+                </div>
+            </div>
+            
+            <div class="cap-triangle">
+                <div class="triangle-container">
+                    <div class="triangle"></div>
+                    
+                    <div class="corner c">
+                        <div class="corner-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>Consistency</div>
+                    </div>
+                    
+                    <div class="corner a">
+                        <div class="corner-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>Availability</div>
+                    </div>
+                    
+                    <div class="corner p">
+                        <div class="corner-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div>Partition Tolerance</div>
+                    </div>
+                    
+                    <div class="triangle-center">
+                        <div class="center-text">PILIH 2</div>
+                        <div class="center-subtext">dari 3</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cap-explanation">
+                <div class="cap-box c-box">
+                    <div class="cap-box-header">
+                        <div class="cap-icon c-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="cap-box-title c-title">Consistency (C)</div>
+                    </div>
+                    <div class="cap-box-content">
+                        <p><strong>Definisi:</strong> Setiap permintaan baca menerima respons yang paling baru ditulis atau kesalahan.</p>
+                        <p><strong>Implikasi:</strong> Semua node dalam sistem terdistribusi melihat data yang sama pada waktu yang sama. Setiap pembaruan segera direplikasi ke semua node sebelum respons dikembalikan ke klien.</p>
+                        <p><strong>Contoh Sistem:</strong> Database relasional tradisional (MySQL, PostgreSQL) dalam mode replikasi sinkron.</p>
+                    </div>
+                </div>
+                
+                <div class="cap-box a-box">
+                    <div class="cap-box-header">
+                        <div class="cap-icon a-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="cap-box-title a-title">Availability (A)</div>
+                    </div>
+                    <div class="cap-box-content">
+                        <p><strong>Definisi:</strong> Setiap permintaan (baca/tulis) menerima respons (non-error), tanpa jaminan bahwa data yang dikembalikan adalah yang terbaru.</p>
+                        <p><strong>Implikasi:</strong> Sistem tetap merespons bahkan jika beberapa node gagal atau terputus. Klien selalu mendapatkan respons, meskipun mungkin data yang sedikit kedaluwarsa.</p>
+                        <p><strong>Contoh Sistem:</strong> CDN (Content Delivery Networks), cache distribusi seperti Redis, DNS.</p>
+                    </div>
+                </div>
+                
+                <div class="cap-box p-box">
+                    <div class="cap-box-header">
+                        <div class="cap-icon p-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="cap-box-title p-title">Partition Tolerance (P)</div>
+                    </div>
+                    <div class="cap-box-content">
+                        <p><strong>Definisi:</strong> Sistem terus beroperasi meskipun ada kegagalan komunikasi antar node (partisi jaringan) yang menyebabkan hilangnya atau penundaan pesan antar node.</p>
+                        <p><strong>Implikasi:</strong> Sistem harus dapat menangani pemisahan jaringan yang membagi node menjadi kelompok-kelompok yang tidak dapat berkomunikasi satu sama lain.</p>
+                        <p><strong>Realisasi Praktis:</strong> Di dunia nyata dengan jaringan yang tidak sempurna, <span class="highlight">Partition Tolerance wajib dipilih</span> untuk sistem terdistribusi.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tradeoff-section">
+                <div class="tradeoff-title">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Trade-off dalam Praktik: Pilihan yang Tersisa</h3>
+                </div>
+                <div class="tradeoff-content">
+                    <div class="tradeoff-box cp">
+                        <div class="tradeoff-box-header">
+                            <i class="fas fa-ban" style="color: #5c6bc0;"></i>
+                            <span>CP System (Consistency + Partition Tolerance)</span>
+                        </div>
+                        <p><strong>Karakteristik:</strong> Menjamin konsistensi dan toleransi partisi, tetapi mengorbankan ketersediaan.</p>
+                        <p><strong>Perilaku saat partisi:</strong> Sistem akan mengembalikan error untuk operasi yang membutuhkan konsistensi saat partisi terjadi.</p>
+                        <p><strong>Contoh:</strong> Database seperti MongoDB (dengan konfigurasi tertentu), Apache ZooKeeper, Google Spanner.</p>
+                    </div>
+                    
+                    <div class="tradeoff-box ap">
+                        <div class="tradeoff-box-header">
+                            <i class="fas fa-ban" style="color: #66bb6a;"></i>
+                            <span>AP System (Availability + Partition Tolerance)</span>
+                        </div>
+                        <p><strong>Karakteristik:</strong> Menjamin ketersediaan dan toleransi partisi, tetapi mengorbankan konsistensi.</p>
+                        <p><strong>Perilaku saat partisi:</strong> Sistem tetap merespons, tetapi data mungkin tidak konsisten (eventual consistency).</p>
+                        <p><strong>Contoh:</strong> Cassandra, DynamoDB, CouchDB, sistem cache seperti Redis Cluster.</p>
+                    </div>
+                    
+                    <div class="tradeoff-box ca">
+                        <div class="tradeoff-box-header">
+                            <i class="fas fa-exclamation-triangle" style="color: #ef5350;"></i>
+                            <span>CA System (Consistency + Availability)</span>
+                        </div>
+                        <p><strong>Karakteristik:</strong> Menjamin konsistensi dan ketersediaan, tetapi tidak toleran terhadap partisi jaringan.</p>
+                        <p><strong>Realitas:</strong> Dalam praktik, <span class="highlight">sistem CA tidak mungkin di dunia nyata</span> karena partisi jaringan pasti terjadi. Sistem CA biasanya adalah sistem terpusat atau sistem terdistribusi yang berasumsi jaringan sempurna.</p>
+                        <p><strong>Contoh:</strong> Database relasional standalone (tanpa replikasi), sistem monolitik tradisional.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="implementation-example">
+                <div class="example-title">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Penerapan dalam Desain Fault-Tolerant</h3>
+                </div>
+                <div class="example-content">
+                    <p>Dalam laporan desain sistem fault-tolerant untuk platform transaksi finansial, trade-off CAP menjadi pertimbangan kritis:</p>
+                    
+                    <div class="example-highlight">
+                        <p><strong>Konteks Transaksi Finansial:</strong> Untuk data transaksi yang membutuhkan compliance PCI-DSS/GDPR dengan RPO (Recovery Point Objective) = 0, sistem memilih pendekatan <span class="highlight">CP (Consistency + Partition Tolerance)</span> dengan replikasi sinkron.</p>
+                        <p><strong>Implikasi:</strong> Saat partisi jaringan terjadi antara node database, sistem mungkin mengembalikan error untuk operasi tulis daripada mengizinkan inkonsistensi data. Namun, untuk komponen pendukung seperti cache (Redis) atau object storage (MinIO), sistem dapat memilih pendekatan <span class="highlight">AP (Availability + Partition Tolerance)</span> dengan eventual consistency.</p>
+                    </div>
+                    
+                    <p style="margin-top: 15px;"><strong>Pelajaran Penting:</strong> Desain fault-tolerant yang efektif tidak mencari "solusi sempurna" untuk CAP, tetapi mengidentifikasi komponen mana yang membutuhkan konsistensi kuat vs. ketersediaan tinggi, dan mendesain arsitektur yang sesuai untuk setiap komponen tersebut (polyglot persistence).</p>
+                </div>
+            </div>
+            
+            <div class="reference-section">
+                <div class="reference-title">
+                    <i class="fas fa-book"></i>
+                    <h3>Referensi Akademis Teorema CAP</h3>
+                </div>
+                <div class="reference-content">
+                    <div class="reference-item">
+                        <strong>Publikasi Asli (2000):</strong> 
+                        <a href="https://people.eecs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf" target="_blank" class="reference-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Brewer, E. A. (2000). Towards robust distributed systems. PODC Keynote Speech.
+                        </a>
+                        <p style="margin-top: 5px; font-size: 0.95rem; color: #555;">Presentasi awal yang memperkenalkan konsep CAP pada Symposium on Principles of Distributed Computing.</p>
+                    </div>
+                    
+                    <div class="reference-item">
+                        <strong>Publikasi Formal (2002):</strong> 
+                        <a href="https://www.glassbeam.com/sites/all/themes/glassbeam/images/blog/10.1.1.67.6951.pdf" target="_blank" class="reference-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Brewer, E. A. (2002). CAP twelve years later: How the "rules" have changed. Computer, 45(2), 23-29.
+                        </a>
+                        <p style="margin-top: 5px; font-size: 0.95rem; color: #555;">Artikel yang merangkum dan memperbarui pemahaman tentang CAP setelah 12 tahun.</p>
+                    </div>
+                    
+                    <div class="reference-item">
+                        <strong>Bukti Formal (2002):</strong> 
+                        <a href="https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf" target="_blank" class="reference-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Gilbert, S., & Lynch, N. (2002). Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services. ACM SIGACT News, 33(2), 51-59.
+                        </a>
+                        <p style="margin-top: 5px; font-size: 0.95rem; color: #555;">Bukti formal pertama yang membuktikan kebenaran konjektur Brewer menjadi teorema.</p>
+                    </div>
+                    
+                    <div class="reference-item">
+                        <strong>Pembaruan Konsep (2012):</strong> 
+                        <a href="https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/" target="_blank" class="reference-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Brewer, E. (2012). CAP twelve years later: How the "rules" have changed. IEEE Computer Society.
+                        </a>
+                        <p style="margin-top: 5px; font-size: 0.95rem; color: #555;">Artikel yang menjelaskan perkembangan pemahaman tentang CAP setelah 12 tahun dan nuansanya dalam praktik.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-note">
+                Teorema CAP bukan batasan mutlak tetapi kerangka untuk memahami trade-off dalam desain sistem terdistribusi. Sistem modern sering mengadopsi pendekatan hibrid yang menyeimbangkan C, A, dan P berdasarkan konteks spesifik setiap komponen.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animasi untuk kotak CAP saat dimuat
+            const capBoxes = document.querySelectorAll('.cap-box');
+            const tradeoffBoxes = document.querySelectorAll('.tradeoff-box');
+            
+            capBoxes.forEach((box, index) => {
+                box.style.opacity = '0';
+                box.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    box.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    box.style.opacity = '1';
+                    box.style.transform = 'translateY(0)';
+                }, 300 + (index * 200));
+            });
+            
+            // Animasi untuk triangle
+            const triangle = document.querySelector('.triangle');
+            const corners = document.querySelectorAll('.corner');
+            const center = document.querySelector('.triangle-center');
+            
+            if (triangle) {
+                triangle.style.opacity = '0';
+                setTimeout(() => {
+                    triangle.style.transition = 'opacity 1s ease';
+                    triangle.style.opacity = '1';
+                }, 500);
+            }
+            
+            corners.forEach((corner, index) => {
+                corner.style.opacity = '0';
+                setTimeout(() => {
+                    corner.style.transition = 'opacity 0.8s ease';
+                    corner.style.opacity = '1';
+                }, 800 + (index * 300));
+            });
+            
+            if (center) {
+                center.style.opacity = '0';
+                center.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => {
+                    center.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    center.style.opacity = '1';
+                    center.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 1400);
+            }
+            
+            // Interaksi untuk kotak tradeoff
+            tradeoffBoxes.forEach(box => {
+                box.addEventListener('click', function() {
+                    // Reset semua box
+                    tradeoffBoxes.forEach(b => {
+                        b.style.transform = 'translateY(0)';
+                        b.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.05)';
+                    });
+                    
+                    // Highlight box yang diklik
+                    this.style.transform = 'translateY(-10px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
+                    
+                    // Kembalikan setelah beberapa saat
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.05)';
+                    }, 1500);
+                });
+            });
+            
+            // Efek untuk link referensi
+            const referenceLinks = document.querySelectorAll('.reference-link, .journal-link');
+            referenceLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            // Efek teks highlight
+            const highlights = document.querySelectorAll('.highlight');
+            highlights.forEach(highlight => {
+                highlight.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#bbdefb';
+                    this.style.transition = 'background-color 0.3s ease';
+                });
+                
+                highlight.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '#e3f2fd';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

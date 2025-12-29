@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refleksi Diri: Pembelajaran dari Perancangan Sistem Fault-Tolerant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide-header {
+            background: linear-gradient(to right, #0c2461, #1e3799);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .slide-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slide-header h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .slide-content {
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .reflection-section {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #1e3799;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .reflection-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: #0c2461;
+        }
+        
+        .section-title i {
+            font-size: 1.8rem;
+            background-color: #e6e9ff;
+            padding: 12px;
+            border-radius: 50%;
+        }
+        
+        .section-title h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+        
+        .insight-content {
+            line-height: 1.7;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        
+        .insight-content p {
+            margin-bottom: 15px;
+        }
+        
+        .example-box {
+            background-color: #e6e9ff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 15px;
+            border-left: 4px solid #4a69bd;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: #0c2461;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .conclusion-section {
+            background: linear-gradient(to right, #f8f9fa, #e6e9ff);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            border-top: 5px solid #4a69bd;
+        }
+        
+        .conclusion-title {
+            color: #0c2461;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .conclusion-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .key-point {
+            display: inline-block;
+            background-color: #0c2461;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            margin: 5px;
+            font-weight: 500;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .slide-header h1 {
+                font-size: 2rem;
+            }
+            
+            .slide-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .slide-content {
+                padding: 25px;
+            }
+            
+            .section-title h3 {
+                font-size: 1.3rem;
+            }
+            
+            .insight-content {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .slide-header {
+                padding: 20px;
+            }
+            
+            .slide-header h1 {
+                font-size: 1.7rem;
+            }
+            
+            .reflection-section {
+                padding: 20px;
+            }
+            
+            .section-title {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-header">
+            <h1>Refleksi Diri</h1>
+            <h2>Pembelajaran dari Perancangan Sistem Fault-Tolerant pada Komputasi Terdistribusi</h2>
+        </div>
+        
+        <div class="slide-content">
+            <div class="reflection-section">
+                <div class="section-title">
+                    <i class="fas fa-balance-scale"></i>
+                    <h3>Pemahaman tentang Kompleksitas dan Trade-off</h3>
+                </div>
+                <div class="insight-content">
+                    <p>Merancang sistem yang fault-tolerant bukan sekadar menambahkan komponen cadangan. Proses ini mengajarkan pentingnya memahami dan membuat keputusan sulit mengenai <span class="highlight">trade-off fundamental</span> dalam sistem terdistribusi, terutama berkaitan dengan <a href="teorema-cap-referensi.html" target="_blank">Teorema CAP</a>.</p>
+                    <p>Setiap pilihan desain memiliki konsekuensi langsung terhadap availability, consistency, dan partition tolerance sistem.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <i class="fas fa-database"></i>
+                            Contoh dari Implementasi
+                        </div>
+                        <p>Dalam desain sistem untuk transaksi finansial, pemilihan <span class="highlight">replikasi data synchronous</span> untuk mencapai RPO=0 mengorbankan sedikit latensi demi konsistensi mutlak. Ini adalah pertimbangan penting mengingat kebutuhan compliance PCI-DSS dan GDPR yang ketat.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reflection-section">
+                <div class="section-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Mindset "Failure as a Given" dalam Desain</h3>
+                </div>
+                <div class="insight-content">
+                    <p>Perubahan pola pikir terbesar adalah beralih dari mempertanyakan <span class="highlight">"jika sistem gagal"</span> menjadi merencanakan untuk <span class="highlight">"ketika sistem gagal"</span>. Pendekatan ini memaksa perancang untuk mengidentifikasi semua kemungkinan mode kegagalan dan merancang mekanisme respons otomatis.</p>
+                    <p>Desain dimulai dengan asumsi bahwa komponen akan gagal, jaringan akan terpartisi, dan data akan rusak pada suatu waktu.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <i class="fas fa-heartbeat"></i>
+                            Contoh dari Implementasi
+                        </div>
+                        <p>Analisis kebutuhan yang menentukan deteksi kegagalan ≤30 detik dan RTO &lt;2 menit mengharuskan implementasi mekanisme <span class="highlight">health check, heartbeat, dan automated failover</span> yang terintegrasi di setiap lapisan (database, aplikasi, jaringan, storage).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reflection-section">
+                <div class="section-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Nilai Dokumentasi dan Perencanaan Detail</h3>
+                </div>
+                <div class="insight-content">
+                    <p>Spesifikasi teknis yang sangat rinci (seperti tabel spesifikasi vCPU, memory, dan disk untuk setiap cluster) bukan hanya untuk perhitungan biaya, tetapi berfungsi sebagai <span class="highlight">blueprint teknis</span> yang memastikan konsistensi performa dan menghindari bottleneck tak terduga.</p>
+                    <p>Tanpa dokumentasi yang jelas dan terperinci, sistem yang kompleks menjadi sulit untuk dioperasikan, dipulihkan, atau diskalakan dengan aman.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <i class="fas fa-table"></i>
+                            Contoh dari Implementasi
+                        </div>
+                        <p>Tabel spesifikasi untuk setiap komponen (PostgreSQL Cluster, MinIO, ActiveMQ, Redis, ELK, OpenShift) memungkinkan perencanaan kapasitas yang akurat dan menghindari situasi di mana <span class="highlight">ketidakcukupan resources</span> justru menjadi titik kegagalan baru.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reflection-section">
+                <div class="section-title">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Kesadaran akan Biaya vs. Nilai (Cost vs. Value)</h3>
+                </div>
+                <div class="insight-content">
+                    <p>Fault tolerance memiliki biaya yang nyata: infrastruktur berlebih, lisensi perangkat lunak, dan kompleksitas operasional. Proses desain melatih kemampuan untuk <span class="highlight">membenarkan setiap investasi</span> dengan kebutuhan bisnis yang kritis dan dampak kegagalan yang mungkin terjadi.</p>
+                    <p>Pertimbangan biaya tidak hanya moneter tetapi juga dalam hal kompleksitas sistem dan overhead operasional.</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <i class="fas fa-cloud"></i>
+                            Contoh dari Implementasi
+                        </div>
+                        <p>Arsitektur <span class="highlight">active-active hybrid cloud</span> dan redundansi multi-node memiliki biaya infrastruktur yang signifikan. Namun, nilainya sepadan untuk melindungi platform transaksi finansial dengan target availability 99.99% dan kepatuhan terhadap regulasi ketat seperti PCI-DSS dan GDPR.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="conclusion-section">
+                <h3 class="conclusion-title">Kesimpulan Refleksi</h3>
+                <p class="conclusion-text">Perancangan sistem fault-tolerant ini bukan sekadar latihan akademis, tetapi simulasi nyata dalam membuat keputusan arsitektural yang memiliki konsekuensi langsung pada keandalan, keamanan, dan kelangsungan bisnis. </p>
+                <p class="conclusion-text" style="margin-top: 15px; font-weight: 600;">Kunci keberhasilannya terletak pada:</p>
+                <div style="margin-top: 15px;">
+                    <span class="key-point">Kejelasan Tujuan Bisnis</span>
+                    <span class="key-point">Pemahaman Mendalam tentang Kegagalan</span>
+                    <span class="key-point">Disiplin dalam Eksekusi Teknis</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            Refleksi berdasarkan laporan "Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi: Studi Kasus Implementasi Platform Microservice Berbasis Red Hat OpenShift"
+        </div>
+    </div>
+
+    <script>
+        // Animasi sederhana untuk elemen saat dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.reflection-section');
+            
+            sections.forEach((section, index) => {
+                // Atur penundaan animasi berdasarkan urutan
+                setTimeout(() => {
+                    section.style.opacity = '0';
+                    section.style.transform = 'translateY(20px)';
+                    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    // Trigger reflow untuk memastikan transisi berjalan
+                    void section.offsetWidth;
+                    
+                    // Animasikan
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+            
+            // Tambahkan interaksi klik untuk menyoroti bagian
+            sections.forEach(section => {
+                section.addEventListener('click', function() {
+                    // Hapus kelas aktif dari semua bagian
+                    sections.forEach(s => s.style.backgroundColor = '#f8f9fa');
+                    
+                    // Tambahkan sorotan ke bagian yang diklik
+                    this.style.backgroundColor = '#f0f2ff';
+                    
+                    // Kembalikan ke warna semula setelah beberapa saat
+                    setTimeout(() => {
+                        this.style.backgroundColor = '#f8f9fa';
+                    }, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
