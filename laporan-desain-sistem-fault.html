@@ -485,9 +485,56 @@
             <p>Kami menyadari bahwa laporan ini masih memiliki ruang untuk penyempurnaan. Oleh karena itu, kritik dan saran yang membangun sangat kami harapkan untuk perbaikan di masa mendatang. Semoga laporan ini dapat memberikan manfaat dan kontribusi, baik sebagai bahan pembelajaran maupun sebagai referensi dalam pengembangan sistem terdistribusi yang fault-tolerant dengan platform <strong>Red Hat OpenShift</strong>.</p>
             
             <div class="signature">
-                <p>Jakarta, 24 Desember 2025</p>
-            </div>
-			
+        <p id="tanggal-signature"></p> <!-- PASTIKAN ID INI ADA -->
+        <p>Hormat saya,</p>
+       <p style="margin-top: 50px; margin-bottom: 5px; font-weight: bold;">
+  DIMAS KURNIAWAN
+</p>
+<p style="margin-top: 0; margin-bottom: 0;">
+  NIM: 25120300016
+</p>
+    </div>
+		<script>
+  
+    // Fungsi sederhana untuk menampilkan tanggal TANPA NAMA HARI
+    function tampilkanTanggal() {
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        const sekarang = new Date();
+        
+        // WIB = UTC+7
+        const waktuWIB = new Date(sekarang.getTime() + (7 * 60 * 60 * 1000));
+        
+        const tanggal = waktuWIB.getUTCDate();
+        const namaBulan = bulan[waktuWIB.getUTCMonth()];
+        const tahun = waktuWIB.getUTCFullYear();
+        const jam = waktuWIB.getUTCHours().toString().padStart(2, '0');
+        const menit = waktuWIB.getUTCMinutes().toString().padStart(2, '0');
+        
+        // Tampilkan di signature (TANPA NAMA HARI)
+        const signatureEl = document.getElementById('tanggal-signature');
+        if (signatureEl) {
+            signatureEl.textContent = `Jakarta, ${tanggal} ${namaBulan} ${tahun} ${jam}:${menit} WIB`;
+        }
+        
+        // Tampilkan di cover
+        const coverEl = document.getElementById('tanggal-cover');
+        if (coverEl) {
+            coverEl.textContent = `${tanggal} ${namaBulan} ${tahun}`;
+        }
+    }
+    
+    // Jalankan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', tampilkanTanggal);
+    
+    // Update setiap menit
+    setInterval(tampilkanTanggal, 60000);
+    
+    // Debug
+    console.log('Script tanggal dijalankan');
+
+</script>	
 			  <div class="abstract-box">
                 <h3>ABSTRAK</h3>
                 <p>Laporan ini menyajikan desain sistem <em>fault-tolerant</em> untuk platform transaksi finansial berbasis arsitektur <strong>active-active hybrid cloud</strong>. Sistem dirancang untuk mendukung transaksi digital sensitif dengan target <em>availability</em> <strong>99,99%</strong> melalui implementasi redundansi multi-layer pada lingkungan cloud dan <em>data center on-premise</em>. Desain mengintegrasikan <strong>container orchestration platform (Red Hat OpenShift)</strong>, <strong>database cluster terdistribusi (PostgreSQL Streaming Replication)</strong>, <strong>object storage (MinIO)</strong>, dan <strong>messaging system (ActiveMQ)</strong> dengan strategi <em>recovery</em> otomatis berbasis <em>health check</em> dan <em>consensus protocol</em>. Analisis menunjukkan sistem mampu menangani kegagalan hingga <strong>33% node</strong> tanpa <em>downtime</em> signifikan, dengan <strong>RTO (Recovery Time Objective) &lt; 2 menit</strong> dan <strong>RPO (Recovery Point Objective) = 0</strong> untuk transaksi finansial. Pendekatan ini memanfaatkan prinsip <strong>komputasi terdistribusi</strong> seperti <em>replication</em>, <em>sharding</em>, dan <em>distributed consensus</em> untuk mencapai ketahanan terhadap <em>single point of failure</em> dan kegagalan berskala zona.</p>
@@ -574,13 +621,8 @@
         
         <div id="bab2-1">
             <h3>2.1 Deskripsi Masalah</h3>
-            <p><strong>Konteks Sistem:</strong> Platform transaksi dengan karakteristik:</p>
-            <ul>
-                <li>Volume transaksi: 10.000+ transaksi harian</li>
-                <li>Data sensitif: Transaksi dengan compliance ketat (PCI-DSS, GDPR)</li>
-                <li>Pengguna: Pelanggan ritel, klien korporat, administrator</li>
-                <li>Ketersediaan: Diperlukan 24/7 tanpa interruption</li>
-            </ul>
+            <p align="justified">Sistem yang diulas adalah sebuah platform transaksi dengan volume aktivitas yang tinggi. Setiap hari, sistem ini melayani lebih dari sepuluh ribu transaksi yang melibatkan data sensitif. Oleh karena itu, sistem ini harus memenuhi standar keamanan dan peraturan seperti PCI-DSS dan GDPR. Pengguna sistem mencakup pelanggan ritel, klien perusahaan, dan administrator. Dari segi operasional, layanan harus selalu tersedia 24 jam sehari tanpa gangguan.</p>
+            
             
             <p><strong>Permasalahan Utama:</strong></p>
             <ol>
@@ -1662,6 +1704,67 @@
                 activeButton.classList.add('active');
             }
         }
+		
+		
+	// Fungsi untuk mendapatkan nama hari dalam Bahasa Indonesia
+function getHariIndonesia() {
+    const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    return hari[new Date().getDay()];
+}
+
+// Fungsi untuk mendapatkan nama bulan dalam Bahasa Indonesia
+function getBulanIndonesia() {
+    const bulan = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return bulan[new Date().getMonth()];
+}
+
+// Fungsi untuk format tanggal dengan leading zero
+function formatDuaDigit(angka) {
+    return angka < 10 ? '0' + angka : angka;
+}
+
+// Fungsi untuk mendapatkan waktu saat ini di zona waktu Jakarta (WIB)
+function getWaktuJakarta() {
+    const sekarang = new Date();
+    
+    // Jakarta adalah UTC+7
+    const offsetJakarta = 7 * 60; // dalam menit
+    const utc = sekarang.getTime() + (sekarang.getTimezoneOffset() * 60000);
+    const waktuJakarta = new Date(utc + (offsetJakarta * 60000));
+    
+    return waktuJakarta;
+}
+
+// Fungsi untuk menampilkan tanggal dan waktu
+function updateTanggalWaktu() {
+    const waktuJakarta = getWaktuJakarta();
+    const hari = getHariIndonesia();
+    const tanggal = waktuJakarta.getDate();
+    const bulan = getBulanIndonesia();
+    const tahun = waktuJakarta.getFullYear();
+    const jam = formatDuaDigit(waktuJakarta.getHours());
+    const menit = formatDuaDigit(waktuJakarta.getMinutes());
+    
+    return `Jakarta, ${hari}, ${tanggal} ${bulan} ${tahun} ${jam}:${menit} WIB`;
+}
+
+// Cari elemen signature dan update kontennya
+function initSignature() {
+    const signatureElements = document.querySelectorAll('.signature p');
+    
+    if (signatureElements.length > 0) {
+        signatureElements.forEach(element => {
+            // Hanya update jika teks mengandung "Jakarta" atau sesuai format tanggal
+            if (element.textContent.includes('Jakarta')) {
+                element.textContent = updateTanggalWaktu();
+            }
+        });
+    }
+}	
+		
     </script>
 
 </body>
