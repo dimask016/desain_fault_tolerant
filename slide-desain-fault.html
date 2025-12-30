@@ -316,6 +316,18 @@
         <header class="presentation-header">
             <div class="logo">
                 <i class="fas fa-server logo-icon"></i>
+				 <!-- Logo Universitas -->
+        <div style="margin: 10px 0; text-align: center;">
+            <div style="display: inline-block; padding: 15px; background: white; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <img src="cakrwala-university.jpeg" 
+                     alt="Logo Universitas Cakrawala" 
+                     style="width: 120px; height: 120px; display: block; margin: 0 auto;">
+            </div>
+            <h2 style="font-size: 12pt; margin-top: 15px; color: #63e467;">
+                UNIVERSITAS CAKRAWALA
+            </h2>
+           
+        </div>
                 <div>
                     <h1>Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</h1>
                     <div class="author-info">
@@ -347,17 +359,62 @@
                     </div>
                 </div>
             </div>
-            
+              <div class="signature">
+        <p id="tanggal-signature" align="center"></p> <!-- PASTIKAN ID INI ADA -->
+      
+ 
+    </div>
+		<script>
+  
+    // Fungsi sederhana untuk menampilkan tanggal TANPA NAMA HARI
+    function tampilkanTanggal() {
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        const sekarang = new Date();
+        
+        // WIB = UTC+7
+        const waktuWIB = new Date(sekarang.getTime() + (7 * 60 * 60 * 1000));
+        
+        const tanggal = waktuWIB.getUTCDate();
+        const namaBulan = bulan[waktuWIB.getUTCMonth()];
+        const tahun = waktuWIB.getUTCFullYear();
+        const jam = waktuWIB.getUTCHours().toString().padStart(2, '0');
+        const menit = waktuWIB.getUTCMinutes().toString().padStart(2, '0');
+        
+        // Tampilkan di signature (TANPA NAMA HARI)
+        const signatureEl = document.getElementById('tanggal-signature');
+        if (signatureEl) {
+            signatureEl.textContent = `Jakarta, ${tanggal} ${namaBulan} ${tahun} ${jam}:${menit} WIB`;
+        }
+        
+        // Tampilkan di cover
+        const coverEl = document.getElementById('tanggal-cover');
+        if (coverEl) {
+            coverEl.textContent = `${tanggal} ${namaBulan} ${tahun}`;
+        }
+    }
+    
+    // Jalankan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', tampilkanTanggal);
+    
+    // Update setiap menit
+    setInterval(tampilkanTanggal, 60000);
+    
+    // Debug
+    console.log('Script tanggal dijalankan');
+
+</script>	
             <!-- Slide 2: Pendahuluan -->
             <div class="slide" id="slide2">
                 <div class="slide-header">
                     <h2><i class="fas fa-book-open"></i> BAB 1: Pendahuluan</h2>
                 </div>
                 <div class="slide-content">
-                    <p>Dalam era digital yang terus berkembang, ketergantungan pada sistem komputasi terdistribusi telah menjadi fondasi kritis bagi operasi bisnis modern.</p>
+                    <p align="justified">Dalam perkembangan teknologi digital saat ini, sistem komputasi terdistribusi memainkan peran yang semakin penting dalam mendukung keberlangsungan proses bisnis. Ketergantungan terhadap sistem tersebut menjadikannya sebagai elemen utama dalam memastikan layanan dapat berjalan secara andal dan berkelanjutan</p>
                     
                     <div class="highlight">
-                        <p><strong>Desain Sistem Fault-Tolerant</strong> muncul sebagai solusi fundamental dalam menghadapi realitas ini. Konsep ini merujuk pada kemampuan sistem untuk terus beroperasi dengan benar meskipun terjadi kegagalan pada beberapa komponen penyusunnya.</p>
+                        <p align="justified"><strong>Desain Sistem Fault-Tolerant</strong> perancangan sistem yang memiliki kemampuan toleransi terhadap kegagalan menjadi kebutuhan yang tidak terpisahkan. Sistem fault-tolerant dirancang agar tetap mampu beroperasi secara normal meskipun sebagian komponen mengalami gangguan atau kegagalan, sehingga kontinuitas layanan tetap terjaga.</p>
                     </div>
                     
                     <h3 style="color: var(--primary-color); margin-top: 25px;">Tujuan Penulisan Laporan</h3>
@@ -437,8 +494,113 @@
                 </div>
             </div>
             
-            <!-- Slide 4: Arsitektur Sistem -->
-            <div class="slide" id="slide4">
+			
+		<!-- Slide 4: Analisis Kebutuhan Komputasi Paralel/Terdistribusi -->
+<div class="slide" id="slide4">
+    <div class="slide-header">
+        <h2><i class="fas fa-cogs"></i> 2.2 Analisis Kebutuhan Komputasi Paralel/Terdistribusi</h2>
+    </div>
+	
+	 
+                    <h3 style="color: var(--primary-color); margin-top: 25px;">Analisis Kebutuhan Fault Tolerance</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kebutuhan</th>
+                                <th>Deskripsi</th>
+                                <th>Metrik Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Scalability</strong></td>
+                                <td>Kapasitas menghadapi traffic spike</td>
+                                <td>Scale out hingga 10x traffic normal</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recovery Speed</strong></td>
+                                <td>Minimal downtime saat failure</td>
+                                <td>RTO ≤ 2 menit</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Failure Detection Speed</strong></td>
+                                <td>Deteksi cepat sebelum berdampak sistem</td>
+                                <td>≤ 30 detik</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance</strong></td>
+                                <td>Response time cepat untuk user experience</td>
+                                <td>&lt; 2 detik per transaksi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+	
+    <div class="slide-content">
+        <h3 style="color: var(--primary-color);">Klasifikasi Jenis Kegagalan pada Sistem Terdistribusi</h3>
+        <p>Sistem komputasi terdistribusi rentan terhadap berbagai jenis kegagalan yang perlu diantisipasi dalam desain <em>fault-tolerant</em>. Berikut adalah analisis jenis kegagalan dan dampaknya:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Jenis Kegagalan</th>
+                    <th>Dampak terhadap Sistem</th>
+                    <th>Contoh dalam Konteks Sistem</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Node Crash Failure</strong></td>
+                    <td>Node tidak dapat memproses permintaan sehingga layanan pada node tersebut terhenti dan perlu dialihkan ke node lain</td>
+                    <td>Server mati secara tiba-tiba, container mengalami crash, hardware failure pada VM</td>
+                </tr>
+                <tr>
+                    <td><strong>Network Partition</strong></td>
+                    <td>Terputusnya komunikasi antar node yang menyebabkan gangguan sinkronisasi dan potensi inkonsistensi layanan</td>
+                    <td>Segmen jaringan terisolasi, latensi jaringan meningkat, switch/router failure</td>
+                </tr>
+                <tr>
+                    <td><strong>Byzantine Failure</strong></td>
+                    <td>Node tetap aktif namun memberikan respons yang tidak sesuai, sehingga dapat memengaruhi keandalan sistem</td>
+                    <td>Bug pada perangkat lunak, kesalahan konfigurasi, malicious node behavior</td>
+                </tr>
+                <tr>
+                    <td><strong>Performance Degradation</strong></td>
+                    <td>Penurunan kinerja sistem yang ditandai dengan meningkatnya waktu respons dan menurunnya throughput</td>
+                    <td>Beban CPU berlebih, aktivitas disk I/O tinggi, memory leak</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Corruption</strong></td>
+                    <td>Data mengalami perubahan atau kerusakan yang dapat menyebabkan kesalahan pemrosesan</td>
+                    <td>Bit rot pada media penyimpanan, kesalahan logika aplikasi, silent data corruption</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3 style="color: var(--primary-color); margin-top: 25px;">Implikasi untuk Desain Fault-Tolerant</h3>
+        <div class="highlight">
+            <p><strong>Pendekatan Mitigasi:</strong></p>
+            <ul>
+                <li><strong>Untuk Crash Failure:</strong> Implementasi health checks, automatic failover, dan node redundancy</li>
+                <li><strong>Untuk Network Partition:</strong> Desain partition-tolerant dengan consensus protocols (Raft/Paxos)</li>
+                <li><strong>Untuk Byzantine Failure:</strong> Implementasi checksum, digital signatures, dan Byzantine fault tolerance algorithms</li>
+                <li><strong>Untuk Performance Degradation:</strong> Monitoring real-time, auto-scaling, dan load balancing</li>
+                <li><strong>Untuk Data Corruption:</strong> Data validation, checksum verification, dan regular backup dengan integrity checks</li>
+            </ul>
+        </div>
+        
+      
+    </div>
+</div>	
+			
+			
+			
+			
+			
+			
+			
+			
+            <!-- Slide 5: Arsitektur Sistem -->
+            <div class="slide" id="slide5">
                 <div class="slide-header">
                     <h2><i class="fas fa-project-diagram"></i> BAB 3: Arsitektur Sistem Fault-Tolerant</h2>
                 </div>
@@ -471,8 +633,8 @@
                 </div>
             </div>
             
-            <!-- Slide 5: Strategi Fault-Tolerance -->
-            <div class="slide" id="slide5">
+            <!-- Slide 6: Strategi Fault-Tolerance -->
+            <div class="slide" id="slide6">
                 <div class="slide-header">
                     <h2><i class="fas fa-shield-alt"></i> Strategi Fault-Tolerance per Layer</h2>
                 </div>
@@ -538,8 +700,8 @@
                 </div>
             </div>
             
-            <!-- Slide 6: Analisis Performa & Scalability -->
-            <div class="slide" id="slide6">
+            <!-- Slide 7: Analisis Performa & Scalability -->
+            <div class="slide" id="slide7">
                 <div class="slide-header">
                     <h2><i class="fas fa-chart-line"></i> BAB 4: Analisis Performa & Scalability</h2>
                 </div>
@@ -635,8 +797,8 @@
                 </div>
             </div>
             
-            <!-- Slide 7: Kesimpulan & Rekomendasi -->
-            <div class="slide" id="slide7">
+            <!-- Slide 8: Kesimpulan & Rekomendasi -->
+            <div class="slide" id="slide8">
                 <div class="slide-header">
                     <h2><i class="fas fa-check-circle"></i> BAB 5: Kesimpulan & Rekomendasi</h2>
                 </div>
@@ -684,8 +846,8 @@
                 </div>
             </div>
             
-            <!-- Slide 8: Daftar Pustaka -->
-            <div class="slide" id="slide8">
+            <!-- Slide 9: Daftar Pustaka -->
+            <div class="slide" id="slide9">
                 <div class="slide-header">
                     <h2><i class="fas fa-book"></i> Daftar Pustaka</h2>
                 </div>
