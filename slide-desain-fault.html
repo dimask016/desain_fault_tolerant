@@ -331,7 +331,7 @@
                 <div>
                     <h1>Desain Sistem Fault-Tolerant pada Komputasi Terdistribusi</h1>
                     <div class="author-info">
-                        <p>Dimas Kurniawan - 25120300016 | Kelas: Paralel and Distributed Computer (Disc3)</p>
+                        <p>Dimas Kurniawan - Muji Nugraha | Kelas: Paralel and Distributed Computer (Disc3)</p>
                         <p>Dosen Pengajar: Dr. Fandy Neta, S.Pd., M.Pd.T | Ilmu Komputer - 2025</p>
                     </div>
                 </div>
@@ -351,8 +351,8 @@
                     </div>
                     <div style="background: var(--light-color); padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
                         <h3 style="color: var(--primary-color); margin-bottom: 20px;">Disusun Oleh:</h3>
-                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Dimas Kurniawan</p>
-                        <p style="font-size: 1.2rem;">NIM: 25120300016</p>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Dimas Kurniawan - 25120300016</p>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Muji Nugraha - 25120300035</p>
                         <hr style="margin: 20px 0;">
                         <p>Dosen Pengajar: Dr. Fandy Neta, S.Pd., M.Pd.T</p>
                         <p>Program Studi Ilmu Komputer - 2025</p>
@@ -809,43 +809,43 @@
                 </div>
                 <div class="slide-content">
                     <h3 style="color: var(--primary-color);">Kesimpulan</h3>
-                    <p>Desain sistem fault-tolerant untuk platform transaksi finansial telah memenuhi semua requirement dengan:</p>
-                    <ol>
-                        <li><strong>High Availability:</strong> Mencapai target SLA 99.99% melalui arsitektur active-active</li>
-                        <li><strong>Fault Tolerance:</strong> Bertahan dari kegagalan hingga 33% node tanpa service disruption</li>
-                        <li><strong>Automated Recovery:</strong> RTO &lt; 2 menit untuk sebagian besar failure scenarios</li>
-                        <li><strong>Data Protection:</strong> RPO = 0 dengan synchronous replication dan backup strategies</li>
-                    </ol>
+                   <p>Desain sistem fault-tolerant untuk platform transaksi berbasis microservices telah memenuhi semua kebutuhan dengan pencapaian berikut:</p>
+						<ol>
+							<li><strong>Ketersediaan Tinggi (High Availability):</strong> Target SLA 99.99% tercapai melalui arsitektur active-active.</li>
+							<li><strong>Toleransi Kesalahan (Fault Tolerance):</strong> Sistem mampu bertahan dari kegagalan hingga 33% node tanpa mengganggu layanan.</li>
+							<li><strong>Pemulihan Otomatis (Automated Recovery):</strong> Waktu pemulihan (RTO) kurang dari 2 menit untuk sebagian besar skenario kegagalan.</li>
+							<li><strong>Perlindungan Data (Data Protection):</strong> Tidak ada kehilangan data (RPO = 0) berkat replikasi sinkron dan strategi pencadangan yang kuat.</li>
+						</ol>
                     
                     <div class="highlight">
-                        <p>Sistem ini merupakan contoh implementasi komputasi terdistribusi yang matang dengan pertimbangan careful trade-off antara availability, consistency, dan cost.</p>
+                        <p>Secara keseluruhan, sistem ini merupakan implementasi komputasi terdistribusi yang matang, yang telah mempertimbangkan keseimbangan yang tepat antara ketersediaan, konsistensi, dan biaya.</p>
                     </div>
                     
                     <h3 style="color: var(--primary-color); margin-top: 25px;">Rekomendasi Implementasi</h3>
                     <div class="recommendation-card">
                         <h4>Prioritas 1 (Segera):</h4>
                         <ul>
-                            <li>Implement chaos engineering testing framework</li>
-                            <li>Setup comprehensive monitoring dengan AIOps capabilities</li>
-                            <li>Document detailed runbooks untuk setiap failure scenario</li>
+                             <li>Menerapkan database connection pooling.</li>
+							<li>Menambah distributed cache untuk query yang sering dilakukan.</li>
+							<li>Menyiapkan verifikasi pencadangan otomatis.</li>
                         </ul>
                     </div>
                     
                     <div class="recommendation-card">
                         <h4>Prioritas 2 (3-6 bulan):</h4>
                         <ul>
-                            <li>Implement database sharding untuk write scaling</li>
-                            <li>Adopt service mesh untuk advanced traffic management</li>
-                            <li>Setup multi-region disaster recovery</li>
+                            <li>Menerapkan database sharding untuk penskalaan operasi tulis (write scaling).</li>
+							<li>Mengadopsi service mesh untuk manajemen lalu lintas yang lebih canggih.</li>
+							<li>Menyiapkan rencana pemulihan bencana (disaster recovery) lintas wilayah (multi-region).</li>
                         </ul>
                     </div>
                     
                     <div class="recommendation-card">
                         <h4>Prioritas 3 (12 bulan):</h4>
                         <ul>
-                            <li>Implement machine learning untuk predictive failure detection</li>
-                            <li>Adopt GitOps untuk infrastructure automation</li>
-                            <li>Consider hybrid multi-cloud strategy</li>
+                            <li>Menerapkan machine learning untuk deteksi kegagalan prediktif.</li>
+							<li>Mengadopsi GitOps untuk otomatisasi infrastruktur.</li>
+							<li>Mempertimbangkan strategi hybrid multi-cloud.</li>
                         </ul>
                     </div>
                 </div>
@@ -859,30 +859,35 @@
                 <div class="slide-content">
                     <h3 style="color: var(--primary-color); margin-bottom: 20px;">Referensi Utama</h3>
                     <ol class="reference-list">
-                        <li>Kleppmann, M. (2017). <em>Designing Data-Intensive Applications</em>. O'Reilly Media.</li>
-                        <li>AWS Well-Architected Framework. (2024). <em>Reliability Pillar Whitepaper</em></li>
-                        <li>Kubernetes Documentation. (2024). <em>Production-Grade Cluster Management</em></li>
-                        <li>Nygard, M. T. (2018). <em>Release It! Design and Deploy Production-Ready Software</em>. Pragmatic Bookshelf.</li>
-                        <li>PostgreSQL Global Development Group. (2024). <em>High Availability, Load Balancing, and Replication</em></li>
-                        <li>Tanenbaum, A. S., & Van Steen, M. (2017). <em>Distributed Systems: Principles and Paradigms</em>. Pearson.</li>
-                        <li>Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). <em>Distributed Systems: Concepts and Design</em>. Addison-Wesley.</li>
-                        <li>Google. (2024). <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly Media.</li>
+                       <li><a href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/" target="_blank">Kleppmann, M. (2017). <em>Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems</em>. O'Reilly Media.</a></li>
+        <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html" target="_blank">Amazon Web Services. (2024). <em>AWS Well-Architected Framework - Reliability Pillar</em>.</a></li>`
+        <li><a href="https://kubernetes.io/docs/tasks/administer-cluster/cluster-management/" target="_blank">The Kubernetes Authors. (2024). <em>Production-Grade Cluster Management - Kubernetes Documentation</em>.</a></li>
+        <li><a href="https://pragprog.com/titles/mnee2/release-it-second-edition/" target="_blank">Nygard, M. T. (2018). <em>Release It!: Design and Deploy Production-Ready Software</em> (2nd ed.). Pragmatic Bookshelf.</a></li>
+        <li><a href="https://www.postgresql.org/docs/current/high-availability.html" target="_blank">The PostgreSQL Global Development Group. (2024). <em>High Availability, Load Balancing, and Replication</em>.</a></li>
+        <li><a href="https://www.distributed-systems.net/index.php/books/ds3/" target="_blank">Tanenbaum, A. S., & Van Steen, M. (2017). <em>Distributed Systems: Principles and Paradigms</em> (3rd ed.). Pearson.</a></li>
+        <li><a href="https://www.pearson.com/en-us/subject-catalog/p/distributed-systems-concepts-and-design/P200000003472/9780133001288" target="_blank">Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). <em>Distributed Systems: Concepts and Design</em> (5th ed.). Addison-Wesley.</a></li>
+        <li><a href="https://research.google/pubs/site-reliability-engineering-how-google-runs-production-systems/" target="_blank">Beyer, B., Jones, C., Petoff, J., & Murphy, N. R. (Eds.). (2024). <em>Site Reliability Engineering: How Google Runs Production Systems</em> (Updated 2024 ed.). O'Reilly Media.</li>
+        <li><a href="https://docs.openshift.com/container-platform/latest/architecture/architecture.html" target="_blank">Red Hat, Inc. (2024). <em>Red Hat OpenShift Documentation - Architecture Overview</em>.</a></li>
+        <li><a href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/" target="_blank">Redis Ltd. (2024). <em>Redis Documentation - High Availability and Replication</em>.</a></li>
+        <li><a href="https://activemq.apache.org/components/artemis/documentation/latest/ha.html" target="_blank">The Apache Software Foundation. (2024). <em>Apache ActiveMQ Artemis Documentation - High Availability</em>.</a></li>
+        <li><a href="https://min.io/docs/minio/linux/operations/concepts/erasure-coding.html" target="_blank">MinIO, Inc. (2024). <em>MinIO Object Storage Documentation - Erasure Coding Overview</em>.</a></li>
+        <li><a href="https://docs.haproxy.org/" target="_blank">HAProxy Technologies. (2024). <em>HAProxy Documentation - High Availability and Load Balancing Configuration</em>.</a></li>
                     </ol>
                     
                     <div class="highlight" style="margin-top: 30px;">
                         <h4 style="color: var(--primary-color);">Best Practices yang Disarankan:</h4>
                         <ul>
-                            <li><strong>Regular Testing:</strong> Conduct quarterly disaster recovery drills</li>
-                            <li><strong>Documentation:</strong> Maintain updated runbooks and architecture diagrams</li>
-                            <li><strong>Training:</strong> Continuous skill development untuk operations team</li>
-                            <li><strong>Monitoring:</strong> Implement SLO-based alerting daripada traditional threshold</li>
+                            <li><strong>Pengujian Rutin:</strong> Melakukan simulasi pemulihan bencana setiap triwulan.</li>
+    <li><strong>Dokumentasi:</strong> Memperbarui runbook dan diagram arsitektur secara berkala.</li>
+    <li><strong>Pelatihan:</strong> Pengembangan keterampilan berkelanjutan untuk tim operasi.</li>
+    <li><strong>Pemantauan:</strong> Menerapkan sistem peringatan berbasis Service Level Objectives (SLO), bukan sekadar ambang batas (threshold) tradisional.</li>
                         </ul>
                     </div>
                     
                     <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
                         <h3 style="color: var(--primary-color);">Terima Kasih</h3>
                         <p>Presentasi ini disusun sebagai bagian dari tugas mata kuliah Paralel and Distributed Computer</p>
-                        <p><strong><a href="refleksi-diri.html" target="_blank">Dimas Kurniawan - 25120300016</strong></a></p>
+                        <p><strong><a href="refleksi-diri.html" target="_blank">Dimas Kurniawan - 25120300016</strong></a></p> | <p><strong><a href="refleksi-diri.html" target="_blank">Muji Nugraha - 25120300035</strong></a></p>
                         <p>Ilmu Komputer - 2025</p>
                     </div>
                 </div>
