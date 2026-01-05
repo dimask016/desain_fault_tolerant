@@ -451,6 +451,14 @@
             <div style="width: 170px; height: 2px; background: #0047AB; margin: 10px auto;"></div>
             <p style="font-size: 12pt; margin: 10px 0 0 0; text-align: center;"><strong>NIM: 25120300035</strong></p>
         </div>
+		
+		  <!-- Kotak 3 -->
+        <div style="text-align: center; padding: 25px 50px; background: #f8f9fa; border-radius: 10px; border-left: 5px solid #0047AB; flex: 1; min-width: 350px; max-width: 400px;">
+         
+            <p style="font-size: 16pt; margin: 0; font-weight: bold; color: #0047AB; text-align: center;">Muh Rangga</p>
+            <div style="width: 170px; height: 2px; background: #0047AB; margin: 10px auto;"></div>
+            <p style="font-size: 12pt; margin: 10px 0 0 0; text-align: center;"><strong>NIM: 24120310003</strong></p>
+        </div>
     </div>
 </div>
         
@@ -499,10 +507,10 @@
         <p id="tanggal-signature"></p> <!-- PASTIKAN ID INI ADA -->
         <p>Hormat kami,</p>
        <p style="margin-top: 50px; margin-bottom: 5px; font-weight: bold;">
-  Dimas Kurniawan | Muji Nugraha
+  Dimas Kurniawan | Muji Nugraha | Muh Rangga
 </p>
 <p style="margin-top: 0; margin-bottom: 0;">
-  25120300016 | 25120300035
+  25120300016 | 25120300035 | 24120310003
 </p>
     </div>
 		<script>
@@ -1292,7 +1300,7 @@
         <div id="bab3-2">
             <h3>3.2 Komponen Kunci dan Strategi Fault-Tolerance</h3>
             
-            <h4>3.2.1 Database Layer (Postgre SQL)</h4>
+            <h4>3.2.1 Database Layer (Postgre SQL0</h4>
             <ul>
                 <li><strong>Konfigurasi Klaster:</strong> 3 node (1 Primary, 2 Standby/Replica) dengan IP Virtual (Virtual IP) untuk akses aplikasi dan failover yang lancar.</li>
 <li><strong>Strategi Failover:</strong> Failover otomatis oleh manajer klaster (misal: Patroni) yang mempromosikan node Standby menjadi Primary jika Primary gagal.</li>
@@ -1787,5 +1795,4 @@ function initSignature() {
     </script>
 
 </body>
-
 </html>
